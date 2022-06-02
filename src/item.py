@@ -15,6 +15,6 @@ class ValuableItem(Item):
         self.direction_y = direction_y
         super().__init__(path_img_item, num_earn_point, x, y)
     
-    def move(self, direction_x, direction_y):
-        self.position_x += direction_x * self.speed
-        self.position_y += direction_y * self.speed
+    def move(self, list_direction_item):
+        self.position_x += list_direction_item[0] * self.speed
+        self.position_y += list_direction_item[1] * self.speed
