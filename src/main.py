@@ -5,15 +5,12 @@ from settings import *
 
 pygame.init()
 
-def draw(self):
-    pass
-
 def main():
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(TITLE)
 
-    background_image = pygame.image.load(r"./map/level_01/tilemap_level_01.png")
+    background_image = pygame.image.load("./map/level_01/tilemap_level_01.png")
     
     running = 1
     while running:
