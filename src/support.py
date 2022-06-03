@@ -12,7 +12,7 @@ def import_csv_to_matrix(path):
         return tilemap_layer_matrix_csv
 
 # Importa um tileset, corta e envia para uma matriz
-def import_to_cut_tileset_into_tiles(path):
+def import_and_cut_tileset_into_tiles(path):
     tileset = pygame.image.load(path).convert_alpha()
 
     num_tile_x = int(tileset.get_size()[0] / TILESIZE)
