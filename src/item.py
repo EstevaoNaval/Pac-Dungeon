@@ -16,16 +16,19 @@ class Item:
 class ValuableItem(Item):
     def __init__(self, path_img_item, num_earn_point, x, y, speed, list_direction_item):
         self.speed = speed
-        self.direction_x = list_direction_item[0]
-        self.direction_y = list_direction_item[1]
+        self.direction = list_direction_item
         super().__init__(path_img_item, num_earn_point, x, y)
     
-    def move(self, list_direction_item):
-        self.position_x += list_direction_item[0] * self.speed
-        self.position_y += list_direction_item[1] * self.speed
+    def move(self, list_direction):
+        self.position_x += list_direction[0] * self.speed
+        self.position_y += list_direction[1] * self.speed
 
     def boost_hero(self, knight):
         knight.speed += 2
         timer_event = pygame.USEREVENT+1
         pygame.time.set_timer(timer_event, 1000)
         knight.speed -= 2
+
+class Sword(Item):
+    def __init__(self, path_img_item, num_earn_point, x, y):
+        super().__init__(path_img_item, num_earn_point, x, y)
