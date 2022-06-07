@@ -48,7 +48,7 @@ class Knight:
         self.stored_direction = direction
 
     def get_pix_pos(self):
-        return vec((self.grid_pos.x * CELL_WIDTH)+TOP_BOTTOM_BUFFER//2 + CELL_WIDTH//2, (self.grid_pos.y * CELL_HEIGHT) + TOP_BOTTOM_BUFFER//2 + CELL_HEIGHT//2)
+        return vec((self.grid_pos.x * CELL_WIDTH) + CELL_WIDTH//2, (self.grid_pos.y * CELL_HEIGHT) + CELL_HEIGHT//2)
 
     def time_to_move(self):
         if int(self.pix_pos.x + TOP_BOTTOM_BUFFER // 2) % CELL_WIDTH == 0:
