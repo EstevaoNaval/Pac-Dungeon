@@ -83,16 +83,6 @@ class Level:
 
         self.p_pos = [0,12]
 
-    def draw_grid(self):
-        for x in range(SCREEN_WIDTH//CELL_WIDTH):
-            pygame.draw.line(self.background, DARKGREY, (x*CELL_WIDTH, 0), (x*self.cell_width, SCREEN_HEIGHT))
-        for x in range(SCREEN_HEIGHT//self.cell_height):
-            pygame.draw.line(self.background, DARKGREY, (0, x*CELL_HEIGHT), (SCREEN_WIDTH, x*CELL_HEIGHT))
-        # for coin in self.coins:
-        #     pygame.draw.rect(self.background, (167, 179, 34), (coin.x*self.cell_width,
-        #     coin.y*self.cell_height, self.cell_width, self.cell_height))
-    
-
     def start_draw(self):
         # TODO
         pass
@@ -129,7 +119,7 @@ class Level:
 
         # self.draw_grid()
 
-        self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [60, 0], SIZE_FONT, WHITE, PATH_FONT)
+        self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [SCREEN_WIDTH//60+2, 0], SIZE_FONT, WHITE, PATH_FONT)
         self.draw_text('HI-SCORE: 0', screen, [SCREEN_WIDTH//2+60, 0], SIZE_FONT, WHITE, PATH_FONT)
 
         pygame.display.update()
