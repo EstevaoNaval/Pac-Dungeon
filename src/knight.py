@@ -1,3 +1,4 @@
+from time import sleep
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, SCREEN_HEIGHT, TOP_BOTTOM_BUFFER, WHITE, screen
 
@@ -29,8 +30,8 @@ class Knight:
             self.able_to_move = self.can_move()
         
         # Set a posição do grid em referência a posição do pixel
-        self.grid_pos.x = (self.pix_pos.x - TOP_BOTTOM_BUFFER + CELL_WIDTH // 2) // CELL_WIDTH + 1
-        self.grid_pos.y = (self.pix_pos.y - TOP_BOTTOM_BUFFER + CELL_HEIGHT // 2) // CELL_HEIGHT + 1
+        self.grid_pos.x = (self.pix_pos.x // CELL_WIDTH) - (TOP_BOTTOM_BUFFER // (2 * CELL_WIDTH) ) - 0.5
+        self.grid_pos.y = (self.pix_pos.y // CELL_HEIGHT) - (TOP_BOTTOM_BUFFER // (2 * CELL_HEIGHT) ) - 0.5
 
     def draw(self):
         pygame.draw.circle(screen, WHITE, (int(self.pix_pos.x), int(self.pix_pos.y)), CELL_WIDTH//2-2)
@@ -57,4 +58,8 @@ class Knight:
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
     
     def can_move(self):
+        for tile_not_pass in self.level.coords_knight_not_pass:
+            if vec(self.grid_pos+self.direction) == tile_not_pass:
+                print(self.grid_pos+self.direction)
+                return 0
         return 1

@@ -4,6 +4,7 @@ from knight import Knight
 from item import Item, ValuableItem
 from settings import *
 from game_data import *
+from sys import exit
 # from main import *
 
 vec = pygame.math.Vector2
@@ -18,7 +19,7 @@ class Level:
         self.is_running = 1
         self.state = 'playing'
 
-        self.walls = []
+        self.coords_knight_not_pass = []
 
         self.gems = []
         self.sword = []
@@ -73,10 +74,14 @@ class Level:
         self.tilemap_upper_wall = pygame.image.load(level_01['tilemap_upper_wall_png'])
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.matrix_tilemap_upper_wall = import_csv_to_matrix(level_01['tilemap_upper_wall_csv'])
-        self.matrix_tilemap_bottom_wall = import_csv_to_matrix(level_01['tilemap_bottom_wall_csv'])
+        self.matrix_tilemap = import_csv_to_matrix(level_01['tilemap_csv'])
 
-        self.p_pos = [13,19]
+        for row in range(len(self.matrix_tilemap)):
+            for column in range(len(self.matrix_tilemap[0])):
+                if (self.matrix_tilemap[row][column] >= "11" and self.matrix_tilemap[row][column] <= "70") or (self.matrix_tilemap[row][column] > "80"):
+                    self.coords_knight_not_pass.append([row, column])
+
+        self.p_pos = [0,12]
 
     def draw_grid(self):
         for x in range(SCREEN_WIDTH//CELL_WIDTH):
@@ -96,6 +101,8 @@ class Level:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.is_running = 0
+                pygame.quit()
+                exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     self.knight.move(vec(-1, 0))
@@ -113,12 +120,12 @@ class Level:
     def playing_draw(self):
         screen.fill(DARKGREY)
         
-        screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
-        screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
+        screen.blit(self.tilemap_floor, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
+        screen.blit(self.tilemap_bottom_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
 
         self.knight.draw()
 
-        screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
+        screen.blit(self.tilemap_upper_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
 
         # self.draw_grid()
 
