@@ -1,7 +1,7 @@
 from math import floor
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, TOP_BOTTOM_BUFFER, WHITE, screen
-from game_data import knight
+# from game_data import knight
 
 vec = pygame.math.Vector2
 

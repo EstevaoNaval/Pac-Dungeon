@@ -5,15 +5,16 @@ from item import Item, ValuableItem
 from settings import *
 from game_data import *
 from sys import exit
+from os import path
 # from main import *
 
 vec = pygame.math.Vector2
 
 class Level:
-    def __init__(self):
+    def __init__(self,num_level):
         self.clock = pygame.time.Clock()
 
-        # self.level = level
+        self.num_level = num_level
 
         self.is_playing = 1
         self.is_running = 1
@@ -75,16 +76,20 @@ class Level:
 
     def load(self):
         # TODO: Referenciar o level_01 através da class Game
-        self.tilemap_floor = pygame.image.load(level_01['tilemap_floor_png'])
+        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
+        "tilemap_floor_level_"+self.num_level+".png"))
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_bottom_wall = pygame.image.load(level_01['tilemap_bottom_wall_png'])
+        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
+        "tilemap_bottom_wall_level_"+self.num_level+".png"))
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_upper_wall = pygame.image.load(level_01['tilemap_upper_wall_png'])
+        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
+        "tilemap_upper_wall_level_"+self.num_level+".png"))
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.matrix_tilemap = import_csv_to_matrix(level_01['tilemap_csv'])
+        self.matrix_tilemap = import_csv_to_matrix(path.join(base_path["path_tilemap"], "level_"+self.num_level,
+        "tilemap_level_"+self.num_level+".csv"))
 
         for x in range(len(self.matrix_tilemap)):
             for y in range(len(self.matrix_tilemap[0])):
