@@ -19,21 +19,22 @@ class Level:
         self.is_running = 1
         self.state = 'playing'
 
-        self.coords_knight_not_pass = []
+        self.coord_wall = []
+        self.coord_monster_house_gate = []
 
         self.gems = []
         self.sword = []
         self.valuable_item = []
         
         self.e_pos = []
-        self.p_pos = None
+        self.knight_pos = None
 
         self.load()
 
-        self.knight = Knight(self, vec(self.p_pos))
+        self.knight = Knight(self, vec(self.knight_pos), 'M')
         
         # self.make_enemies()
-        self.enemies = []
+        self.monster = []
 
     def run(self):
         self.clock.tick()
@@ -63,6 +64,15 @@ class Level:
             pos[1] = pos[1]-text_size[1]//2
         screen.blit(text, pos)
 
+    def draw_grid(self):
+        for x in range(MAZE_WIDTH//CELL_WIDTH):
+            pygame.draw.line(self.tilemap_upper_wall, WHITE, (x*CELL_WIDTH, 0), (x*CELL_WIDTH, MAZE_HEIGHT))
+        for y in range(MAZE_HEIGHT//CELL_HEIGHT):
+            pygame.draw.line(self.tilemap_upper_wall,WHITE, (0, y*CELL_HEIGHT), (MAZE_WIDTH, y*CELL_HEIGHT))
+        # for coin in self.coins:
+        #     pygame.draw.rect(self.background, (167, 179, 34), (coin.x*self.cell_width,
+        #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
+
     def load(self):
         # TODO: Referenciar o level_01 através da class Game
         self.tilemap_floor = pygame.image.load(level_01['tilemap_floor_png'])
@@ -76,12 +86,17 @@ class Level:
 
         self.matrix_tilemap = import_csv_to_matrix(level_01['tilemap_csv'])
 
-        for row in range(len(self.matrix_tilemap)):
-            for column in range(len(self.matrix_tilemap[0])):
-                if (self.matrix_tilemap[row][column] >= "11" and self.matrix_tilemap[row][column] <= "70") or (self.matrix_tilemap[row][column] > "80"):
-                    self.coords_knight_not_pass.append([row, column])
-
-        self.p_pos = [0,12]
+        for x in range(len(self.matrix_tilemap)):
+            for y in range(len(self.matrix_tilemap[0])):
+                code_tileset_map = int(self.matrix_tilemap[x][y])
+                if (x == 13 and y == 15): 
+                    print(code_tileset_map)
+                if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
+                    self.coord_wall.append([y, x])
+                if (code_tileset_map == -10):
+                    self.coord_monster_house_gate.append([y, x])
+                if (code_tileset_map == -5):
+                    self.knight_pos = [y, x]
 
     def start_draw(self):
         # TODO
@@ -110,12 +125,12 @@ class Level:
     def playing_draw(self):
         screen.fill(DARKGREY)
         
-        screen.blit(self.tilemap_floor, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
-        screen.blit(self.tilemap_bottom_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
+        screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
+        screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
         self.knight.draw()
 
-        screen.blit(self.tilemap_upper_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
+        screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
         # self.draw_grid()
 

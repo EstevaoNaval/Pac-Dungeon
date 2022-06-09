@@ -1,11 +1,12 @@
-from time import sleep
+from math import floor
 import pygame
-from settings import CELL_HEIGHT, CELL_WIDTH, SCREEN_HEIGHT, TOP_BOTTOM_BUFFER, WHITE, screen
+from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, TOP_BOTTOM_BUFFER, WHITE, screen
+from game_data import knight
 
 vec = pygame.math.Vector2
 
-class Knight:
-    def __init__(self, level, pos):
+class Knight(pygame.sprite.Sprite):
+    def __init__(self, level, pos, knight_gender):
         self.level = level
         
         self.starting_pos = [pos.x,pos.y]
@@ -19,7 +20,10 @@ class Knight:
 
         self.curr_score = 0
 
-        self.hp_point = 2
+        self.hp_point = 3
+
+    def load_knight_sprite(self):
+        pass
 
     def update(self):
         if self.able_to_move:
@@ -30,12 +34,12 @@ class Knight:
             self.able_to_move = self.can_move()
         
         # Set a posição do grid em referência a posição do pixel
-        self.grid_pos.x = (self.pix_pos.x // CELL_WIDTH) - (TOP_BOTTOM_BUFFER // (2 * CELL_WIDTH) ) - 0.5
-        self.grid_pos.y = (self.pix_pos.y // CELL_HEIGHT) - (TOP_BOTTOM_BUFFER // (2 * CELL_HEIGHT) ) - 0.5
+        self.grid_pos.x = floor((self.pix_pos.x - INITIAL_POSITION_X_GAME) / CELL_WIDTH)
+        self.grid_pos.y = floor((self.pix_pos.y - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
 
     def draw(self):
         pygame.draw.circle(screen, WHITE, (int(self.pix_pos.x), int(self.pix_pos.y)), CELL_WIDTH//2-2)
-        print(self.pix_pos)
+        
 
         # Drawing player lives
         for x in range(self.hp_point):
@@ -49,17 +53,22 @@ class Knight:
         self.stored_direction = direction
 
     def get_pix_pos(self):
-        return vec((self.grid_pos.x * CELL_WIDTH) + CELL_WIDTH//2, (self.grid_pos.y * CELL_HEIGHT) + CELL_HEIGHT//2)
+        return vec((self.grid_pos.x * CELL_WIDTH) + INITIAL_POSITION_X_GAME, (self.grid_pos.y * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME)
 
     def time_to_move(self):
-        if int(self.pix_pos.x + TOP_BOTTOM_BUFFER // 2) % CELL_WIDTH == 0:
+        if (self.pix_pos.x + CELL_WIDTH//2) % CELL_WIDTH == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
-        if int(self.pix_pos.y + TOP_BOTTOM_BUFFER // 2) % CELL_HEIGHT == 0:
+        if (self.pix_pos.y + CELL_HEIGHT//2) % CELL_HEIGHT == 0:
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
+        return 0
     
     def can_move(self):
-        for tile_not_pass in self.level.coords_knight_not_pass:
+        for tile_not_pass in self.level.coord_monster_house_gate:
             if vec(self.grid_pos+self.direction) == tile_not_pass:
-                print(self.grid_pos+self.direction)
+                print("Não passarão!!!")
+                return 0
+        for tile_not_pass in self.level.coord_wall:
+            if vec(self.grid_pos+self.direction) == tile_not_pass:
+                print("Não passarão!!!")
                 return 0
         return 1
