@@ -1,13 +1,20 @@
+from cmath import rect
 from math import floor
+import os
 import pygame
-from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, TOP_BOTTOM_BUFFER, WHITE, screen
+from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
+from game_data import *
+from support import import_and_cut_tileset_into_tiles
 # from game_data import knight
 
 vec = pygame.math.Vector2
 
 class Knight(pygame.sprite.Sprite):
     def __init__(self, level, pos, knight_gender):
+        pygame.sprite.Sprite.__init__(self)
+
         self.level = level
+        self.knight_gender = knight_gender
         
         self.starting_pos = [pos.x,pos.y]
         self.grid_pos = pos
@@ -22,12 +29,29 @@ class Knight(pygame.sprite.Sprite):
 
         self.hp_point = 3
 
+        self.load_knight_sprite()
+
+        self.curr_sprite = 0
+        self.image = self.knight_sprites[self.curr_sprite]
+
+        self.rect = pygame.Rect(0, 0, self.knight_width, self.knight_height)
+
     def load_knight_sprite(self):
-        pass
+        self.knight_width, self.knight_height = 16, 28
+        self.path_knight = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
+
+        self.knight_sprites = import_and_cut_tileset_into_tiles(self.path_knight, self.knight_width, self.knight_height, self.starting_pos)
+        print("certo")
 
     def update(self):
+        self.curr_sprite += 0.05
+        if self.curr_sprite >= len(self.knight_sprites): self.curr_sprite = 0
+        self.image = self.knight_sprites[int(self.curr_sprite)]
+
         if self.able_to_move:
             self.pix_pos +=  self.direction * self.speed
+            self.rect.x = self.pix_pos.x
+            self.rect.y = self.pix_pos.y
         if self.time_to_move():
             if self.stored_direction != None:
                 self.direction = self.stored_direction
@@ -38,8 +62,16 @@ class Knight(pygame.sprite.Sprite):
         self.grid_pos.y = floor((self.pix_pos.y - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
 
     def draw(self):
-        pygame.draw.circle(screen, WHITE, (int(self.pix_pos.x), int(self.pix_pos.y)), CELL_WIDTH//2-2)
+        '''self.knight_list = pygame.sprite.Group()
+        tileset = pygame.image.load(self.path_knight).convert_alpha(screen)
+        x, y = 4 * self.knight_width, 1 * self.knight_height
+
+        for img in self.knight_images:
+            img.blit(tileset, (0,0), pygame.Rect(x, y, self.knight_width, self.knight_height))
         
+        # self.knight_list.draw(screen)'''
+
+        self.image.blit(screen, self.pix_pos)
 
         # Drawing player lives
         for x in range(self.hp_point):
@@ -56,19 +88,19 @@ class Knight(pygame.sprite.Sprite):
         return vec((self.grid_pos.x * CELL_WIDTH) + INITIAL_POSITION_X_GAME, (self.grid_pos.y * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME)
 
     def time_to_move(self):
-        if (self.pix_pos.x + CELL_WIDTH//2) % CELL_WIDTH == 0:
+        if (self.pix_pos.x + CELL_WIDTH//2 + 16//2) % CELL_WIDTH == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
-        if (self.pix_pos.y + CELL_HEIGHT//2) % CELL_HEIGHT == 0:
+        if (self.pix_pos.y + CELL_HEIGHT//2 + 28//2) % CELL_HEIGHT == 0:
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
         return 0
     
     def can_move(self):
         for tile_not_pass in self.level.coord_monster_house_gate:
-            if vec(self.grid_pos+self.direction) == tile_not_pass:
+            if self.rect.collidepoint(((tile_not_pass[0] - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((tile_not_pass[1] - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
                 print("Não passarão!!!")
                 return 0
         for tile_not_pass in self.level.coord_wall:
-            if vec(self.grid_pos+self.direction) == tile_not_pass:
+            if self.rect.collidepoint(((tile_not_pass[0] - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((tile_not_pass[1] - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
                 print("Não passarão!!!")
                 return 0
         return 1

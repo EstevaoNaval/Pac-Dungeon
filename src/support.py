@@ -1,6 +1,5 @@
 from csv import reader
-import codecs
-from settings import TILESIZE
+from settings import screen
 import pygame
 
 # Importa o arquivo csv e o converte em uma matriz
@@ -11,21 +10,23 @@ def import_csv_to_matrix(path):
         for row in labirinto_level:
             matrix_tilemap_csv.append(list(row))
     return matrix_tilemap_csv
+
 # Importa um tileset, corta e envia para uma matriz
-def import_and_cut_tileset_into_tiles(path):
-    tileset = pygame.image.load(path).convert_alpha()
+def import_and_cut_tileset_into_tiles(path, width, height, knight_pos):
+    len_sprt_x, len_sprt_y = [width, height]  # sprite size
 
-    num_tile_x = int(tileset.get_size()[0] / TILESIZE)
-    num_tile_y = int(tileset.get_size()[1] / TILESIZE)
+    sprt_rect_x, sprt_rect_y = [0,0]  # where to find first sprite on sheet
 
-    cropped_tiles = []
-    for row in range(num_tile_x):
-        for column in range(num_tile_y):
-            x, y = row * TILESIZE, column * TILESIZE
+    sheet = pygame.image.load(path).convert_alpha()  # Load the sheet
 
-            tile = pygame.Surface((TILESIZE, TILESIZE), flags=pygame.SRCALPHA)
-            tile.blit(tileset, (0,0), pygame.Rect(x, y, TILESIZE, TILESIZE))
-
-            cropped_tiles.append(tile)
-
-    return cropped_tiles
+    sheet_rect = sheet.get_rect()  # assign a rect of the sheet's size
+    sprites = []  # make a list of sprites
+    for i in range(0, sheet_rect.height, height):  # rows
+        for ii in range(0, sheet_rect.width, width):  # columns
+            sheet.set_clip(pygame.Rect(0, 0, len_sprt_x, len_sprt_y))  # clip the sprite
+            sprite = sheet.subsurface(sheet.get_clip())  # grab the sprite from the clipped area
+            sprites.append(sprite)  # append the sprite to the list
+            sprt_rect_x += len_sprt_x  # go to the next sprite on the x axis
+        sprt_rect_y += len_sprt_y  # go to the next row (y axis)
+        sprt_rect_x = 0  # reset the sprite on the x axis back to 0
+    return sprites  # return the sprites

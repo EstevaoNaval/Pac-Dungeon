@@ -33,6 +33,7 @@ class Level:
         self.load()
 
         self.knight = Knight(self, vec(self.knight_pos), 'M')
+        self.group_knight = pygame.sprite.Group(self.knight)
         
         # self.make_enemies()
         self.monster = []
@@ -124,7 +125,7 @@ class Level:
                     self.knight.move(vec(0, 1))
     
     def playing_update(self):
-        self.knight.update()
+        self.group_knight.update()
         print(self.knight.pix_pos)
     
     def playing_draw(self):
@@ -133,7 +134,7 @@ class Level:
         screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
         screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
-        self.knight.draw()
+        self.group_knight.draw(screen)
 
         screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
@@ -142,6 +143,6 @@ class Level:
         self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [SCREEN_WIDTH//60+2, 0], SIZE_FONT, WHITE, PATH_FONT)
         self.draw_text('HI-SCORE: 0', screen, [SCREEN_WIDTH//2+60, 0], SIZE_FONT, WHITE, PATH_FONT)
 
-        pygame.display.update()
+        pygame.display.flip()
 
         
