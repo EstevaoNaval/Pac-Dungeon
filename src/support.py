@@ -23,7 +23,7 @@ def import_and_cut_tileset_into_tiles(path, width, height, knight_pos):
     sprites = []  # make a list of sprites
     for i in range(0, sheet_rect.height, height):  # rows
         for ii in range(0, sheet_rect.width, width):  # columns
-            sheet.set_clip(pygame.Rect(0, 0, len_sprt_x, len_sprt_y))  # clip the sprite
+            sheet.set_clip(pygame.Rect(sprt_rect_x, sprt_rect_y, len_sprt_x, len_sprt_y))  # clip the sprite
             sprite = sheet.subsurface(sheet.get_clip())  # grab the sprite from the clipped area
             sprites.append(sprite)  # append the sprite to the list
             sprt_rect_x += len_sprt_x  # go to the next sprite on the x axis

@@ -5,7 +5,6 @@ import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
 from game_data import *
 from support import import_and_cut_tileset_into_tiles
-# from game_data import knight
 
 vec = pygame.math.Vector2
 
@@ -32,21 +31,29 @@ class Knight(pygame.sprite.Sprite):
         self.load_knight_sprite()
 
         self.curr_sprite = 0
-        self.image = self.knight_sprites[self.curr_sprite]
+        self.image = self.knight_right_sprites[self.curr_sprite]
 
         self.rect = pygame.Rect(0, 0, self.knight_width, self.knight_height)
 
     def load_knight_sprite(self):
         self.knight_width, self.knight_height = 16, 28
-        self.path_knight = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
+        
+        self.path_knight_right = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
+        self.path_knight_left = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_left.png")
 
-        self.knight_sprites = import_and_cut_tileset_into_tiles(self.path_knight, self.knight_width, self.knight_height, self.starting_pos)
+        self.knight_left_sprites = import_and_cut_tileset_into_tiles(self.path_knight_left, self.knight_width, self.knight_height, self.starting_pos)
+        self.knight_right_sprites = import_and_cut_tileset_into_tiles(self.path_knight_right, self.knight_width, self.knight_height, self.starting_pos)
+
         print("certo")
 
     def update(self):
-        self.curr_sprite += 0.05
-        if self.curr_sprite >= len(self.knight_sprites): self.curr_sprite = 0
-        self.image = self.knight_sprites[int(self.curr_sprite)]
+        self.curr_sprite += 0.33
+        if self.curr_sprite >= len(self.knight_left_sprites): self.curr_sprite = 0
+        
+        if self.direction == vec(-1, 0):
+            self.image = self.knight_left_sprites[int(self.curr_sprite)]
+        elif self.direction == vec(1, 0):
+            self.image = self.knight_right_sprites[int(self.curr_sprite)]
 
         if self.able_to_move:
             self.pix_pos +=  self.direction * self.speed
