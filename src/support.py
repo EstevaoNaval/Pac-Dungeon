@@ -1,6 +1,9 @@
 from csv import reader
-from settings import screen
+from math import floor
+from settings import CELL_WIDTH, CELL_HEIGHT, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, screen
 import pygame
+
+vec = pygame.math.Vector2
 
 # Importa o arquivo csv e o converte em uma matriz
 def import_csv_to_matrix(path):
@@ -30,3 +33,13 @@ def import_and_cut_tileset_into_tiles(path, width, height, knight_pos):
         sprt_rect_y += len_sprt_y  # go to the next row (y axis)
         sprt_rect_x = 0  # reset the sprite on the x axis back to 0
     return sprites  # return the sprites
+
+def grid_2_pix_pos(coord_grid):
+    pix_pos_x = (coord_grid.x * CELL_WIDTH) + INITIAL_POSITION_X_GAME
+    pix_pos_y = (coord_grid.y * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME
+    return vec(pix_pos_x, pix_pos_y)
+
+def pix_2_grid_pos(coord_pix):
+    grid_pos_x = floor((coord_pix.x - INITIAL_POSITION_X_GAME) / CELL_WIDTH)
+    grid_pos_y = floor((coord_pix.y - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
+    return vec(grid_pos_x, grid_pos_y)

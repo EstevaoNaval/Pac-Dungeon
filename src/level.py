@@ -95,14 +95,19 @@ class Level:
         for x in range(len(self.matrix_tilemap)):
             for y in range(len(self.matrix_tilemap[0])):
                 code_tileset_map = int(self.matrix_tilemap[x][y])
-                if (x == 13 and y == 15): 
-                    print(code_tileset_map)
+                if (code_tileset_map == -1):
+                    self.gems.append([y, x])
                 if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
                     self.coord_wall.append([y, x])
                 if (code_tileset_map == -10):
                     self.coord_monster_house_gate.append([y, x])
                 if (code_tileset_map == -5):
                     self.knight_pos = [y, x]
+
+    def draw_coins(self):
+        for gem in self.gems:
+            gem_pix_pos = grid_2_pix_pos(vec(gem))
+            pygame.draw.circle(screen, (190,187,160), [gem_pix_pos.x + CELL_WIDTH//2, gem_pix_pos.y + CELL_HEIGHT//2], 3)   
 
     def start_draw(self):
         # TODO
@@ -134,7 +139,9 @@ class Level:
         screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
         screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
+        self.draw_coins()
         self.group_knight.draw(screen)
+        
 
         screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 

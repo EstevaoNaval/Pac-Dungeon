@@ -1,10 +1,9 @@
-from cmath import rect
 from math import floor
 import os
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
 from game_data import *
-from support import import_and_cut_tileset_into_tiles
+from support import grid_2_pix_pos, import_and_cut_tileset_into_tiles, pix_2_grid_pos
 
 vec = pygame.math.Vector2
 
@@ -22,6 +21,7 @@ class Knight(pygame.sprite.Sprite):
         self.speed = 2
         self.direction = vec(1,0)
         self.stored_direction = None
+        self.last_right_or_left_direction = vec(1, 0)
         self.able_to_move = 1
 
         self.curr_score = 0
@@ -47,12 +47,9 @@ class Knight(pygame.sprite.Sprite):
         print("certo")
 
     def update(self):
-        self.curr_sprite += 0.33
-        if self.curr_sprite >= len(self.knight_left_sprites): self.curr_sprite = 0
-        
-        if self.direction == vec(-1, 0):
+        if self.direction == vec(-1, 0) or self.last_right_or_left_direction == vec(-1, 0):
             self.image = self.knight_left_sprites[int(self.curr_sprite)]
-        elif self.direction == vec(1, 0):
+        elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
             self.image = self.knight_right_sprites[int(self.curr_sprite)]
 
         if self.able_to_move:
@@ -63,10 +60,16 @@ class Knight(pygame.sprite.Sprite):
             if self.stored_direction != None:
                 self.direction = self.stored_direction
             self.able_to_move = self.can_move()
-        
+
+        self.on_gem()
+
+        self.curr_sprite += 0.33
+        if self.curr_sprite >= len(self.knight_left_sprites): self.curr_sprite = 0
+
         # Set a posição do grid em referência a posição do pixel
-        self.grid_pos.x = floor((self.pix_pos.x - INITIAL_POSITION_X_GAME) / CELL_WIDTH)
-        self.grid_pos.y = floor((self.pix_pos.y - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
+        self.grid_pos = pix_2_grid_pos(self.pix_pos)
+
+           
 
     def draw(self):
         '''self.knight_list = pygame.sprite.Group()
@@ -89,16 +92,18 @@ class Knight(pygame.sprite.Sprite):
         #                                         self.grid_pos[1]*self.app.cell_height+TOP_BOTTOM_BUFFER//2, self.app.cell_width, self.app.cell_height), 1)
 
     def move(self, direction):
-        self.stored_direction = direction
+        if direction == vec(-1, 0) or direction == vec(1, 0):
+            self.last_right_or_left_direction = direction
+        self.stored_direction = direction 
 
     def get_pix_pos(self):
-        return vec((self.grid_pos.x * CELL_WIDTH) + INITIAL_POSITION_X_GAME, (self.grid_pos.y * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME)
+        return grid_2_pix_pos(self.grid_pos)
 
     def time_to_move(self):
-        if (self.pix_pos.x + CELL_WIDTH//2 + 16//2) % CELL_WIDTH == 0:
-            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
-        if (self.pix_pos.y + CELL_HEIGHT//2 + 28//2) % CELL_HEIGHT == 0:
-            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
+        if (self.pix_pos.x + 36//2) % CELL_WIDTH == 0:
+            return 1
+        if (self.pix_pos.y + 36//2) % CELL_HEIGHT == 0:
+            return 1
         return 0
     
     def can_move(self):
@@ -111,3 +116,14 @@ class Knight(pygame.sprite.Sprite):
                 print("Não passarão!!!")
                 return 0
         return 1
+
+    def on_gem(self):
+        for i_gem in range(len(self.level.gems)):
+            if self.grid_pos == self.level.gems[i_gem]:
+                if self.rect.collidepoint(((self.grid_pos.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME + CELL_WIDTH//2, ((self.grid_pos.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME + CELL_HEIGHT//2):
+                    self.get_gem(i_gem)
+                    break
+
+    def get_gem(self, index_gem):
+        del self.level.gems[index_gem]
+        self.curr_score += 10

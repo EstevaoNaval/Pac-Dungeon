@@ -1,14 +1,16 @@
 import pygame
 
-class Item:
-    def __init__(self, path_img_item, num_earn_point, x, y):
+class Item(pygame.sprite.Sprite):
+    def __init__(self, path_img_item, num_earn_point, x, y, screen):
         self.path_img_item = path_img_item
         self.num_earn_point = num_earn_point
         self.position_x = x
         self.position_y = y
+        self.screen = screen
 
-    def draw(self, screen):
-        screen.blit(self.path_img_item, (self.position_x, self.position_y))
+    def draw(self):
+        gem_image = pygame.image.load(self.path_img_item)
+        self.screen.blit(gem_image, (self.position_x, self.position_y))
 
     def earn_point(self, knight):
         knight.local_point += self.num_earn_point
