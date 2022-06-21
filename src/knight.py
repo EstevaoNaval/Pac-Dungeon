@@ -1,5 +1,7 @@
 from math import floor
 import os
+from types import CellType
+from webbrowser import get
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
 from game_data import *
@@ -100,30 +102,26 @@ class Knight(pygame.sprite.Sprite):
         return grid_2_pix_pos(self.grid_pos)
 
     def time_to_move(self):
-        if (self.pix_pos.x + 36//2) % CELL_WIDTH == 0:
-            return 1
-        if (self.pix_pos.y + 36//2) % CELL_HEIGHT == 0:
-            return 1
+        if (self.pix_pos.x + CELL_WIDTH // 2) % CELL_WIDTH == 0: return 1
+        if (self.pix_pos.y + CELL_HEIGHT // 2) % CELL_HEIGHT == 0: return 1
         return 0
     
     def can_move(self):
-        for tile_not_pass in self.level.coord_monster_house_gate:
-            if self.rect.collidepoint(((tile_not_pass[0] - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((tile_not_pass[1] - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
-                print("Não passarão!!!")
-                return 0
-        for tile_not_pass in self.level.coord_wall:
-            if self.rect.collidepoint(((tile_not_pass[0] - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((tile_not_pass[1] - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
-                print("Não passarão!!!")
-                return 0
+        '''if self.rect.collidelist(self.level.rect_wall) != -1:
+            print("Não passarão!!!")
+            return 0
+        
+        if self.rect.collidelist(self.level.rect_monster_house_gate) != -1:
+            print("Não passarão!!!")
+            return 0'''
         return 1
 
     def on_gem(self):
-        for i_gem in range(len(self.level.gems)):
-            if self.grid_pos == self.level.gems[i_gem]:
-                if self.rect.collidepoint(((self.grid_pos.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME + CELL_WIDTH//2, ((self.grid_pos.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME + CELL_HEIGHT//2):
-                    self.get_gem(i_gem)
-                    break
+        for i_gem in range(len(self.level.rect_gem)):
+            if self.rect.colliderect(self.level.rect_gem[i_gem]):
+                self.get_gem(i_gem)
+                break
 
     def get_gem(self, index_gem):
-        del self.level.gems[index_gem]
+        del self.level.rect_gem[index_gem]
         self.curr_score += 10

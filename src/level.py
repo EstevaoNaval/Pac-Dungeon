@@ -20,10 +20,10 @@ class Level:
         self.is_running = 1
         self.state = 'playing'
 
-        self.coord_wall = []
-        self.coord_monster_house_gate = []
+        self.rect_wall = []
+        self.rect_monster_house_gate = []
 
-        self.gems = []
+        self.rect_gem = []
         self.sword = []
         self.valuable_item = []
         
@@ -96,18 +96,20 @@ class Level:
             for y in range(len(self.matrix_tilemap[0])):
                 code_tileset_map = int(self.matrix_tilemap[x][y])
                 if (code_tileset_map == -1):
-                    self.gems.append([y, x])
+                    pix_pos = grid_2_pix_pos(vec(y, x))
+                    self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
-                    self.coord_wall.append([y, x])
+                    pix_pos = grid_2_pix_pos(vec(y, x))
+                    self.rect_wall.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if (code_tileset_map == -10):
-                    self.coord_monster_house_gate.append([y, x])
+                    pix_pos = grid_2_pix_pos(vec(y, x))
+                    self.rect_monster_house_gate.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if (code_tileset_map == -5):
                     self.knight_pos = [y, x]
 
     def draw_coins(self):
-        for gem in self.gems:
-            gem_pix_pos = grid_2_pix_pos(vec(gem))
-            pygame.draw.circle(screen, (190,187,160), [gem_pix_pos.x + CELL_WIDTH//2, gem_pix_pos.y + CELL_HEIGHT//2], 3)   
+        for gem in self.rect_gem:
+            pygame.draw.circle(screen, (190,187,160), [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 3)   
 
     def start_draw(self):
         # TODO
