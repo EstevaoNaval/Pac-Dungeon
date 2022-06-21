@@ -39,7 +39,7 @@ class Level:
         self.monster = []
 
     def run(self):
-        self.clock.tick()
+        self.clock.tick(FPS)
 
         while self.is_playing:
             '''if self.state == 'start':

@@ -107,13 +107,13 @@ class Knight(pygame.sprite.Sprite):
         return 0
     
     def can_move(self):
-        '''if self.rect.collidelist(self.level.rect_wall) != -1:
+        if self.rect.collidelist(self.level.rect_wall) != -1:
             print("Não passarão!!!")
             return 0
         
         if self.rect.collidelist(self.level.rect_monster_house_gate) != -1:
             print("Não passarão!!!")
-            return 0'''
+            return 0
         return 1
 
     def on_gem(self):
