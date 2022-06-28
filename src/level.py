@@ -20,8 +20,8 @@ class Level:
         self.is_running = 1
         self.state = 'playing'
 
-        self.rect_wall = []
-        self.rect_monster_house_gate = []
+        self.coord_wall = []
+        self.coord_monster_house_gate = []
 
         self.rect_gem = []
         self.sword = []
@@ -32,7 +32,7 @@ class Level:
 
         self.load()
 
-        self.knight = Knight(self, vec(self.knight_pos), 'M')
+        self.knight = Knight(self, self.knight_pos, 'M')
         self.group_knight = pygame.sprite.Group(self.knight)
         
         # self.make_enemies()
@@ -98,14 +98,12 @@ class Level:
                 if (code_tileset_map == -1):
                     pix_pos = grid_2_pix_pos(vec(y, x))
                     self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
-                if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
-                    pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_wall.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                if ((code_tileset_map >= 10 and code_tileset_map <= 70) or code_tileset_map >= 80):
+                    self.coord_wall.append(vec(y,x))
                 if (code_tileset_map == -10):
-                    pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_monster_house_gate.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                    self.coord_monster_house_gate.append(vec(y,x))
                 if (code_tileset_map == -5):
-                    self.knight_pos = [y, x]
+                    self.knight_pos = vec(y, x)
 
     def draw_coins(self):
         for gem in self.rect_gem:
@@ -143,7 +141,6 @@ class Level:
 
         self.draw_coins()
         self.group_knight.draw(screen)
-        
 
         screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 

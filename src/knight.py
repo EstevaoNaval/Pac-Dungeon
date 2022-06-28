@@ -58,10 +58,11 @@ class Knight(pygame.sprite.Sprite):
             self.pix_pos +=  self.direction * self.speed
             self.rect.x = self.pix_pos.x
             self.rect.y = self.pix_pos.y
+
         if self.time_to_move():
             if self.stored_direction != None:
                 self.direction = self.stored_direction
-            self.able_to_move = self.can_move()
+            self.able_to_move = self.verify_collision()
 
         self.on_gem()
 
@@ -70,8 +71,6 @@ class Knight(pygame.sprite.Sprite):
 
         # Set a posição do grid em referência a posição do pixel
         self.grid_pos = pix_2_grid_pos(self.pix_pos)
-
-           
 
     def draw(self):
         '''self.knight_list = pygame.sprite.Group()
@@ -102,18 +101,18 @@ class Knight(pygame.sprite.Sprite):
         return grid_2_pix_pos(self.grid_pos)
 
     def time_to_move(self):
-        if (self.pix_pos.x + CELL_WIDTH // 2) % CELL_WIDTH == 0: return 1
-        if (self.pix_pos.y + CELL_HEIGHT // 2) % CELL_HEIGHT == 0: return 1
+        if (self.pix_pos.x + CELL_WIDTH) % CELL_WIDTH == 0: 
+            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
+        if (self.pix_pos.y + CELL_HEIGHT) % CELL_HEIGHT == 0: 
+            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
         return 0
-    
-    def can_move(self):
-        if self.rect.collidelist(self.level.rect_wall) != -1:
-            print("Não passarão!!!")
-            return 0
-        
-        if self.rect.collidelist(self.level.rect_monster_house_gate) != -1:
-            print("Não passarão!!!")
-            return 0
+    def verify_collision(self):
+        # collision_tolerance = 10
+
+        for wall in self.level.coord_wall:
+            if vec(self.grid_pos + self.direction) == wall:
+                print("Não passarão")
+                return 0
         return 1
 
     def on_gem(self):
