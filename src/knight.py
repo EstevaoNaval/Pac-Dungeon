@@ -109,8 +109,13 @@ class Knight(pygame.sprite.Sprite):
     def verify_collision(self):
         # collision_tolerance = 10
 
+        for gate in self.level.coord_monster_house_gate:
+            if self.rect.collidepoint(((gate.x - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((gate.y - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
+                print("Não passarão")
+                return 0
+
         for wall in self.level.coord_wall:
-            if vec(self.grid_pos + self.direction) == wall:
+            if self.rect.collidepoint(((wall.x - self.direction.x) * CELL_WIDTH) + INITIAL_POSITION_X_GAME, ((wall.y - self.direction.y) * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME):
                 print("Não passarão")
                 return 0
         return 1

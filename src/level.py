@@ -98,7 +98,7 @@ class Level:
                 if (code_tileset_map == -1):
                     pix_pos = grid_2_pix_pos(vec(y, x))
                     self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
-                if ((code_tileset_map >= 10 and code_tileset_map <= 70) or code_tileset_map >= 80):
+                if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
                     self.coord_wall.append(vec(y,x))
                 if (code_tileset_map == -10):
                     self.coord_monster_house_gate.append(vec(y,x))
