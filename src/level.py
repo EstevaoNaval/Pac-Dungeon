@@ -5,41 +5,38 @@ from item import Item, ValuableItem
 from settings import *
 from game_data import *
 from sys import exit
-from os import path
 # from main import *
 
 vec = pygame.math.Vector2
 
 class Level:
-    def __init__(self,num_level):
+    def __init__(self):
         self.clock = pygame.time.Clock()
 
-        self.num_level = num_level
+        # self.level = level
 
         self.is_playing = 1
         self.is_running = 1
         self.state = 'playing'
 
-        self.coord_wall = []
-        self.coord_monster_house_gate = []
+        self.coords_knight_not_pass = []
 
-        self.rect_gem = []
+        self.gems = []
         self.sword = []
         self.valuable_item = []
         
         self.e_pos = []
-        self.knight_pos = None
+        self.p_pos = None
 
         self.load()
 
-        self.knight = Knight(self, self.knight_pos, 'M')
-        self.group_knight = pygame.sprite.Group(self.knight)
+        self.knight = Knight(self, vec(self.p_pos))
         
         # self.make_enemies()
-        self.monster = []
+        self.enemies = []
 
     def run(self):
-        self.clock.tick(FPS)
+        self.clock.tick()
 
         while self.is_playing:
             '''if self.state == 'start':
@@ -66,48 +63,35 @@ class Level:
             pos[1] = pos[1]-text_size[1]//2
         screen.blit(text, pos)
 
-    def draw_grid(self):
-        for x in range(MAZE_WIDTH//CELL_WIDTH):
-            pygame.draw.line(self.tilemap_upper_wall, WHITE, (x*CELL_WIDTH, 0), (x*CELL_WIDTH, MAZE_HEIGHT))
-        for y in range(MAZE_HEIGHT//CELL_HEIGHT):
-            pygame.draw.line(self.tilemap_upper_wall,WHITE, (0, y*CELL_HEIGHT), (MAZE_WIDTH, y*CELL_HEIGHT))
-        # for coin in self.coins:
-        #     pygame.draw.rect(self.background, (167, 179, 34), (coin.x*self.cell_width,
-        #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
-
     def load(self):
         # TODO: Referenciar o level_01 através da class Game
-        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_floor_level_"+self.num_level+".png"))
+        self.tilemap_floor = pygame.image.load(level_01['tilemap_floor_png'])
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_bottom_wall_level_"+self.num_level+".png"))
+        self.tilemap_bottom_wall = pygame.image.load(level_01['tilemap_bottom_wall_png'])
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_upper_wall_level_"+self.num_level+".png"))
+        self.tilemap_upper_wall = pygame.image.load(level_01['tilemap_upper_wall_png'])
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.matrix_tilemap = import_csv_to_matrix(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_level_"+self.num_level+".csv"))
+        self.matrix_tilemap = import_csv_to_matrix(level_01['tilemap_csv'])
 
-        for x in range(len(self.matrix_tilemap)):
-            for y in range(len(self.matrix_tilemap[0])):
-                code_tileset_map = int(self.matrix_tilemap[x][y])
-                if (code_tileset_map == -1):
-                    pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
-                if ((code_tileset_map >= 10 and code_tileset_map <= 70) or code_tileset_map >= 80):
-                    self.coord_wall.append(vec(y,x))
-                if (code_tileset_map == -10):
-                    self.coord_monster_house_gate.append(vec(y,x))
-                if (code_tileset_map == -5):
-                    self.knight_pos = vec(y, x)
+        for row in range(len(self.matrix_tilemap)):
+            for column in range(len(self.matrix_tilemap[0])):
+                if (self.matrix_tilemap[row][column] >= "11" and self.matrix_tilemap[row][column] <= "70") or (self.matrix_tilemap[row][column] > "80"):
+                    self.coords_knight_not_pass.append([row, column])
 
-    def draw_coins(self):
-        for gem in self.rect_gem:
-            pygame.draw.circle(screen, (190,187,160), [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 3)   
+        self.p_pos = [0,12]
+
+    def draw_grid(self):
+        for x in range(SCREEN_WIDTH//CELL_WIDTH):
+            pygame.draw.line(self.background, DARKGREY, (x*CELL_WIDTH, 0), (x*self.cell_width, SCREEN_HEIGHT))
+        for x in range(SCREEN_HEIGHT//self.cell_height):
+            pygame.draw.line(self.background, DARKGREY, (0, x*CELL_HEIGHT), (SCREEN_WIDTH, x*CELL_HEIGHT))
+        # for coin in self.coins:
+        #     pygame.draw.rect(self.background, (167, 179, 34), (coin.x*self.cell_width,
+        #     coin.y*self.cell_height, self.cell_width, self.cell_height))
+    
 
     def start_draw(self):
         # TODO
@@ -130,25 +114,24 @@ class Level:
                     self.knight.move(vec(0, 1))
     
     def playing_update(self):
-        self.group_knight.update()
+        self.knight.update()
         print(self.knight.pix_pos)
     
     def playing_draw(self):
         screen.fill(DARKGREY)
         
-        screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
-        screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
+        screen.blit(self.tilemap_floor, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
+        screen.blit(self.tilemap_bottom_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
 
-        self.draw_coins()
-        self.group_knight.draw(screen)
+        self.knight.draw()
 
-        screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
+        screen.blit(self.tilemap_upper_wall, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
 
         # self.draw_grid()
 
-        self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [SCREEN_WIDTH//60+2, 0], SIZE_FONT, WHITE, PATH_FONT)
+        self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [60, 0], SIZE_FONT, WHITE, PATH_FONT)
         self.draw_text('HI-SCORE: 0', screen, [SCREEN_WIDTH//2+60, 0], SIZE_FONT, WHITE, PATH_FONT)
 
-        pygame.display.flip()
+        pygame.display.update()
 
         
