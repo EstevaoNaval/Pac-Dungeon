@@ -40,9 +40,9 @@ class Level:
         self.knight = Knight(self, self.knight_pos, gender_knight)
         self.group_knight = pygame.sprite.Group(self.knight)
         
-        # self.monster_type = self.choose_monster_type()
-        # self.make_monster()
+        self.monster_type = self.choose_monster_type()
         self.monster = []
+        self.make_monster()
 
     def run(self):
         self.clock.tick(FPS)
@@ -82,7 +82,6 @@ class Level:
         #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
 
     def load(self):
-        # TODO: Referenciar o level_01 através da class Game
         self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
         "tilemap_floor_level_"+self.num_level+".png")).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
@@ -133,7 +132,7 @@ class Level:
 
     def make_monster(self):
         for idx, pos in enumerate(self.monster_pos):
-            self.monsters.append(Monster(self, pos, idx, self.monster_type))
+            self.monsters.append(Monster(self, pos, idx+1, self.monster_type))
 
     def draw_item(self):
         for gem in self.rect_gem:

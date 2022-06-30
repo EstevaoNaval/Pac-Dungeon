@@ -16,13 +16,23 @@ class Monster(pygame.sprite.Sprite):
         self.starting_pos = [pos.x, pos.y]
         self.pix_pos = grid_2_pix_pos(pos)
 
+        self.action_number = 4
+        self.monster_number = str(monster_number)
+        self.monster_type = monster_type
+        self.action_mode = self.set_action_mode()
+
         self.direction = vec(0, 0)
         self.speed = self.set_speed()
         self.target = None
+        self.last_right_or_left_direction = vec(1, 0)
+        self.able_to_move = 1
 
-        self.monster_number = monster_number
-        self.monster_type = monster_type
-        self.action_mode = self.set_action_mode()
+        self.load_monster_sprite()
+
+        self.curr_sprite = 0
+        self.image = self.monster_right_sprites[self.curr_sprite]
+
+        self.rect = pygame.Rect(0, 0, self.monster_width, self.monster_height)
 
     def update(self):
         pass
@@ -43,28 +53,35 @@ class Monster(pygame.sprite.Sprite):
 
             path_monster_left = path.join(base_path["path_monster"], "zombie/","zombie_"+self.monster_number+"_run_left.png")
             path_monster_right = path.join(base_path["path_monster"], "zombie/","zombie_"+self.monster_number+"_run_right.png")
-
-            self.monster_left_sprites = import_and_cut_tileset_into_tiles(path_monster_left, monster_width, monster_height, self.starting_pos)
-            self.monster_right_sprites = import_and_cut_tileset_into_tiles(path_monster_right, monster_width, monster_height, self.starting_pos)
         elif self.monster_type == "ogre":
             self.monster_width, self.monster_height = 32, 32
-            pass
+            
+            path_monster_left = path.join(base_path["path_monster"], "ogre/","ogre_"+self.monster_number+"_run_left.png")
+            path_monster_right = path.join(base_path["path_monster"], "ogre/","ogre_"+self.monster_number+"_run_right.png")
         elif self.monster_type == "dark_knight":
             self.monster_width, self.monster_height = 32, 32
-            pass
+            
+            path_monster_left = path.join(base_path["path_monster"], "dark_knight/", "dark_knight_"+self.monster_number+"_run_left.png")
+            path_monster_right = path.join(base_path["path_monster"], "dark_knight/", "dark_knight_"+self.monster_number+"_run_right.png")
         else:
             self.monster_width, self.monster_height = 32, 36
+
+            path_monster_left = path.join(base_path["path_monster"], "hades/", "hades_"+self.monster_number+"_run_left.png")
+            path_monster_right = path.join(base_path["path_monster"], "hades/", "hades_"+self.monster_number+"_run_right.png")
             pass
 
+        self.monster_left_sprites = import_and_cut_tileset_into_tiles(path_monster_left, self.monster_width, self.monster_height, self.starting_pos)
+        self.monster_right_sprites = import_and_cut_tileset_into_tiles(path_monster_right, self.monster_width, self.monster_height, self.starting_pos)
+
     
-    def set_action_mode():
-        if self.number == 0:
+    def set_action_mode(self):
+        if self.action_number == 0:
             return "speedy"
-        elif self.number == 1:
+        elif self.action_number == 1:
             return "chaser"
-        elif self.number == 2:
+        elif self.action_number == 2:
             return "prey"
-        elif self.number == 3:
+        elif self.action_number == 3:
             return "defeated"
         else:
             return "scatter"

@@ -35,13 +35,13 @@ class Knight(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, self.knight_width, self.knight_height)
 
     def load_knight_sprite(self):
-        knight_width, knight_height = 16, 28
+        self.knight_width, self.knight_height = 16, 28
         
         path_knight_right = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
         path_knight_left = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_left.png")
 
-        self.knight_left_sprites = import_and_cut_tileset_into_tiles(path_knight_left, knight_width, knight_height, self.starting_pos)
-        self.knight_right_sprites = import_and_cut_tileset_into_tiles(path_knight_right, knight_width, knight_height, self.starting_pos)
+        self.knight_left_sprites = import_and_cut_tileset_into_tiles(path_knight_left, self.knight_width, self.knight_height, self.starting_pos)
+        self.knight_right_sprites = import_and_cut_tileset_into_tiles(path_knight_right, self.knight_width, self.knight_height, self.starting_pos)
 
     def update(self):
         if self.direction == vec(-1, 0) or self.last_right_or_left_direction == vec(-1, 0):
