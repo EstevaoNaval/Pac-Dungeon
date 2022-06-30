@@ -1,4 +1,5 @@
 import pygame
+from monster import Monster
 from support import *
 from knight import Knight
 from item import Item, ValuableItem
@@ -11,8 +12,10 @@ from os import path
 vec = pygame.math.Vector2
 
 class Level:
-    def __init__(self,num_level):
+    def __init__(self, num_level, gender_knight):
         self.clock = pygame.time.Clock()
+
+        self.gender_knight = gender_knight
 
         self.num_level = num_level
 
@@ -24,18 +27,21 @@ class Level:
         self.coord_monster_house_gate = []
 
         self.rect_gem = []
-        self.sword = []
+        self.rect_sword = []
         self.valuable_item = []
         
-        self.e_pos = []
+        self.monsters = [] 
+        self.monster_pos = []
+
         self.knight_pos = None
 
         self.load()
 
-        self.knight = Knight(self, self.knight_pos, 'M')
+        self.knight = Knight(self, self.knight_pos, gender_knight)
         self.group_knight = pygame.sprite.Group(self.knight)
         
-        # self.make_enemies()
+        # self.monster_type = self.choose_monster_type()
+        # self.make_monster()
         self.monster = []
 
     def run(self):
@@ -78,17 +84,22 @@ class Level:
     def load(self):
         # TODO: Referenciar o level_01 através da class Game
         self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_floor_level_"+self.num_level+".png"))
+        "tilemap_floor_level_"+self.num_level+".png")).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
         self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_bottom_wall_level_"+self.num_level+".png"))
+        "tilemap_bottom_wall_level_"+self.num_level+".png")).convert_alpha()
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
         self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_upper_wall_level_"+self.num_level+".png"))
+        "tilemap_upper_wall_level_"+self.num_level+".png")).convert_alpha()
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
+        self.load_pass_blocker()
+
+        self.load_sword()
+
+    def load_pass_blocker(self):
         self.matrix_tilemap = import_csv_to_matrix(path.join(base_path["path_tilemap"], "level_"+self.num_level,
         "tilemap_level_"+self.num_level+".csv"))
 
@@ -98,16 +109,43 @@ class Level:
                 if (code_tileset_map == -1):
                     pix_pos = grid_2_pix_pos(vec(y, x))
                     self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                if (code_tileset_map == -3):
+                    pix_pos = grid_2_pix_pos(vec(y, x))
+                    self.rect_sword.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
                     self.coord_wall.append(vec(y,x))
                 if (code_tileset_map == -10):
                     self.coord_monster_house_gate.append(vec(y,x))
                 if (code_tileset_map == -5):
                     self.knight_pos = vec(y, x)
+                if (code_tileset_map >= -9 and code_tileset_map <= -6):
+                    self.monster_pos.append(vec(y,x))
 
-    def draw_coins(self):
+    def load_sword(self):
+        self.sword = pygame.image.load(path.join(base_path["path_sword"], "sword_"+self.num_level+".png")).convert_alpha()
+        self.sword = pygame.transform.scale(self.sword, (16, 16))
+
+    def choose_monster_type(self):
+        if self.num_level == '1': self.monster_type = 'zombie'
+        elif self.num_level == '2': self.monster_type = 'ogre'
+        elif self.num_level == '3': self.monster_type = 'dark_knight'
+        else: self.monster_type = 'hades'
+
+    def make_monster(self):
+        for idx, pos in enumerate(self.monster_pos):
+            self.monsters.append(Monster(self, pos, idx, self.monster_type))
+
+    def draw_item(self):
         for gem in self.rect_gem:
-            pygame.draw.circle(screen, (190,187,160), [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 3)   
+            pygame.draw.circle(screen, GRAYISH_YELLOW, [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 3)
+
+        for sword in self.rect_sword:
+            screen.blit(self.sword, (sword.x, sword.y))
+
+    def draw_health_point(self):
+        for hp_point in range(self.knight.hp_point):
+            # self.knight.knight_right_sprites[0]
+            screen.blit(self.knight.knight_right_sprites[0], (INITIAL_POSITION_X_GAME + hp_point * CELL_WIDTH + 4 * CELL_WIDTH, INITIAL_POSITION_Y_GAME + MAZE_HEIGHT))
 
     def start_draw(self):
         # TODO
@@ -139,7 +177,7 @@ class Level:
         screen.blit(self.tilemap_floor, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
         screen.blit(self.tilemap_bottom_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 
-        self.draw_coins()
+        self.draw_item()
         self.group_knight.draw(screen)
 
         screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
@@ -148,6 +186,9 @@ class Level:
 
         self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [SCREEN_WIDTH//60+2, 0], SIZE_FONT, WHITE, PATH_FONT)
         self.draw_text('HI-SCORE: 0', screen, [SCREEN_WIDTH//2+60, 0], SIZE_FONT, WHITE, PATH_FONT)
+
+        self.draw_text('LIFE: ', screen, [SCREEN_WIDTH//60 + 2, INITIAL_POSITION_Y_GAME + MAZE_HEIGHT + CELL_HEIGHT//2], SIZE_FONT, WHITE, PATH_FONT)
+        self.draw_health_point()
 
         pygame.display.flip()
 

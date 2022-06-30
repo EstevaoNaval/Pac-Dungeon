@@ -1,7 +1,4 @@
-from math import floor
 import os
-from types import CellType
-from webbrowser import get
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
 from game_data import *
@@ -20,7 +17,7 @@ class Knight(pygame.sprite.Sprite):
         self.grid_pos = pos
         self.pix_pos = self.get_pix_pos()
 
-        self.speed = 2
+        self.speed = 1
         self.direction = vec(1,0)
         self.stored_direction = None
         self.last_right_or_left_direction = vec(1, 0)
@@ -28,7 +25,7 @@ class Knight(pygame.sprite.Sprite):
 
         self.curr_score = 0
 
-        self.hp_point = 3
+        self.hp_point = 2
 
         self.load_knight_sprite()
 
@@ -38,15 +35,13 @@ class Knight(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, self.knight_width, self.knight_height)
 
     def load_knight_sprite(self):
-        self.knight_width, self.knight_height = 16, 28
+        knight_width, knight_height = 16, 28
         
-        self.path_knight_right = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
-        self.path_knight_left = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_left.png")
+        path_knight_right = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_right.png")
+        path_knight_left = os.path.join(base_path["path_knight"],self.knight_gender+"/","knight_"+self.knight_gender+"_run_left.png")
 
-        self.knight_left_sprites = import_and_cut_tileset_into_tiles(self.path_knight_left, self.knight_width, self.knight_height, self.starting_pos)
-        self.knight_right_sprites = import_and_cut_tileset_into_tiles(self.path_knight_right, self.knight_width, self.knight_height, self.starting_pos)
-
-        print("certo")
+        self.knight_left_sprites = import_and_cut_tileset_into_tiles(path_knight_left, knight_width, knight_height, self.starting_pos)
+        self.knight_right_sprites = import_and_cut_tileset_into_tiles(path_knight_right, knight_width, knight_height, self.starting_pos)
 
     def update(self):
         if self.direction == vec(-1, 0) or self.last_right_or_left_direction == vec(-1, 0):
@@ -55,7 +50,9 @@ class Knight(pygame.sprite.Sprite):
             self.image = self.knight_right_sprites[int(self.curr_sprite)]
 
         if self.able_to_move:
-            self.pix_pos +=  self.direction * self.speed
+            self.pix_pos.x += self.direction.x * self.speed
+            self.pix_pos.y += self.direction.y * self.speed
+
             self.rect.x = self.pix_pos.x
             self.rect.y = self.pix_pos.y
 
@@ -64,9 +61,9 @@ class Knight(pygame.sprite.Sprite):
                 self.direction = self.stored_direction
             self.able_to_move = self.verify_collision()
 
-        self.on_gem()
+        self.on_item()
 
-        self.curr_sprite += 0.33
+        self.curr_sprite += 0.1
         if self.curr_sprite >= len(self.knight_left_sprites): self.curr_sprite = 0
 
         # Set a posição do grid em referência a posição do pixel
@@ -84,9 +81,9 @@ class Knight(pygame.sprite.Sprite):
 
         self.image.blit(screen, self.pix_pos)
 
-        # Drawing player lives
+        '''# Drawing player lives
         for x in range(self.hp_point):
-            pygame.draw.circle(screen, WHITE, (30 + 20*x, SCREEN_HEIGHT - 15), 7)
+            pygame.draw.circle(screen, WHITE, (30 + 20*x, SCREEN_HEIGHT - 15), 7)'''
 
         # Drawing the grid pos rect
         # pygame.draw.rect(self.app.screen, RED, (self.grid_pos[0]*self.app.cell_width+TOP_BOTTOM_BUFFER//2,
@@ -106,6 +103,7 @@ class Knight(pygame.sprite.Sprite):
         if (self.pix_pos.y + CELL_HEIGHT) % CELL_HEIGHT == 0: 
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
         return 0
+
     def verify_collision(self):
         # collision_tolerance = 10
 
@@ -120,12 +118,24 @@ class Knight(pygame.sprite.Sprite):
                 return 0
         return 1
 
-    def on_gem(self):
+    def on_item(self):
         for i_gem in range(len(self.level.rect_gem)):
             if self.rect.colliderect(self.level.rect_gem[i_gem]):
                 self.get_gem(i_gem)
+                break
+        
+        for i_sword in range(len(self.level.rect_sword)):
+            if self.rect.colliderect(self.level.rect_sword[i_sword]):
+                self.get_sword(i_sword)
                 break
 
     def get_gem(self, index_gem):
         del self.level.rect_gem[index_gem]
         self.curr_score += 10
+
+    def get_sword(self, index_sword):
+        del self.level.rect_sword[index_sword]
+        self.curr_score += 100
+
+    '''def on_sword(self):
+        for i_sword in range(len())'''

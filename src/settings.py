@@ -5,6 +5,7 @@ from pygame.locals import *
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 DARKGREY = (40,40,40)
+GRAYISH_YELLOW = (190,187,160)
 BG_COLOR = DARKGREY
 
 # Tile grid
@@ -20,7 +21,7 @@ GAME_STATE = "menu"
 
 # Text
 SIZE_FONT = 32
-PATH_FONT = "./assets/font/ARCADEPI.TTF" 
+PATH_FONT = "./assets/font/8-BIT WONDER.TTF" 
 
 # Screen
 SCREEN_WIDTH, SCREEN_HEIGHT = 448, 640 # 16px X 28 tiles, 16px X 36 tiles + 16 X 4 tiles para placar
