@@ -95,9 +95,9 @@ class Knight(pygame.sprite.Sprite):
         self.stored_direction = direction
 
     def time_to_move(self):
-        if (self.pix_pos.x + CELL_WIDTH) % CELL_WIDTH == 0: 
+        if int(self.pix_pos.x + CELL_WIDTH) % CELL_WIDTH == 0: 
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
-        if (self.pix_pos.y + CELL_HEIGHT) % CELL_HEIGHT == 0: 
+        if int(self.pix_pos.y + CELL_HEIGHT) % CELL_HEIGHT == 0: 
             if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
         return 0
 
@@ -132,7 +132,7 @@ class Knight(pygame.sprite.Sprite):
 
     def get_gem(self, index_gem):
         del self.level.rect_gem[index_gem]
-        self.curr_score += 100
+        self.curr_score += 50
 
     '''def on_gem(self):
         for i_gem in range(len())'''

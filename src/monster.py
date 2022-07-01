@@ -1,7 +1,7 @@
 from os import path
 import pygame
 
-from settings import screen
+from settings import screen, CELL_WIDTH, CELL_HEIGHT
 from game_data import *
 from support import grid_2_pix_pos, import_and_cut_tileset_into_tiles, pix_2_grid_pos
 
@@ -61,8 +61,18 @@ class Monster(pygame.sprite.Sprite):
         return speed
 
     def set_target(self):
-
+        if self.monster_personality == "blinky":
+            return self.level.knight.grid_pos
+        elif self.monster_personality == "pinky":
+            pass
         pass
+
+    def time_to_move(self):
+        if int(self.pix_pos.x + CELL_WIDTH) % CELL_WIDTH == 0: 
+            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0, 0): return 1
+        if int(self.pix_pos.y + CELL_HEIGHT) % CELL_HEIGHT == 0: 
+            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0): return 1
+        return 0
 
     def load_monster_sprite(self):
         if self.monster_type == "zombie":
