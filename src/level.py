@@ -26,8 +26,8 @@ class Level:
         self.coord_wall = []
         self.coord_monster_house_gate = []
 
+        self.rect_pill = []
         self.rect_gem = []
-        self.rect_sword = []
         self.valuable_item = []
         
         self.monsters = [] 
@@ -41,7 +41,7 @@ class Level:
         self.group_knight = pygame.sprite.Group(self.knight)
         
         self.monster_type = self.choose_monster_type()
-        self.monster = []
+        self.group_monster = pygame.sprite.Group()
         self.make_monster()
 
     def run(self):
@@ -96,7 +96,7 @@ class Level:
 
         self.load_pass_blocker()
 
-        self.load_sword()
+        self.load_gem()
 
     def load_pass_blocker(self):
         self.matrix_tilemap = import_csv_to_matrix(path.join(base_path["path_tilemap"], "level_"+self.num_level,
@@ -107,10 +107,10 @@ class Level:
                 code_tileset_map = int(self.matrix_tilemap[x][y])
                 if (code_tileset_map == -1):
                     pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                    self.rect_pill.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if (code_tileset_map == -3):
                     pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_sword.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                    self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
                 if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
                     self.coord_wall.append(vec(y,x))
                 if (code_tileset_map == -10):
@@ -120,26 +120,29 @@ class Level:
                 if (code_tileset_map >= -9 and code_tileset_map <= -6):
                     self.monster_pos.append(vec(y,x))
 
-    def load_sword(self):
-        self.sword = pygame.image.load(path.join(base_path["path_sword"], "sword_"+self.num_level+".png")).convert_alpha()
-        self.sword = pygame.transform.scale(self.sword, (16, 16))
+    def load_gem(self):
+        self.gem = pygame.image.load(path.join(base_path["path_gem"], "gem_"+self.num_level+".png")).convert_alpha()
+        self.gem = pygame.transform.scale(self.gem, (16, 16))
 
     def choose_monster_type(self):
-        if self.num_level == '1': self.monster_type = 'zombie'
-        elif self.num_level == '2': self.monster_type = 'ogre'
-        elif self.num_level == '3': self.monster_type = 'dark_knight'
-        else: self.monster_type = 'hades'
+        if self.num_level == '1': monster_type = 'zombie'
+        elif self.num_level == '2': monster_type = 'ogre'
+        elif self.num_level == '3': monster_type = 'dark_knight'
+        else: monster_type = 'hades'
+        return monster_type
 
     def make_monster(self):
         for idx, pos in enumerate(self.monster_pos):
             self.monsters.append(Monster(self, pos, idx+1, self.monster_type))
+            self.group_monster.add(self.monsters[idx])
 
     def draw_item(self):
-        for gem in self.rect_gem:
-            pygame.draw.circle(screen, GRAYISH_YELLOW, [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 3)
+        for pill in self.rect_pill:
+            pygame.draw.circle(screen, GRAYISH_YELLOW, [pill.x + CELL_WIDTH//2, pill.y + CELL_HEIGHT//2], 3)
 
-        for sword in self.rect_sword:
-            screen.blit(self.sword, (sword.x, sword.y))
+        for gem in self.rect_gem:
+            # pygame.draw.circle(screen, GRAYISH_YELLOW, [gem.x + CELL_WIDTH//2, gem.y + CELL_HEIGHT//2], 5)
+            screen.blit(self.gem, (gem.x, gem.y))
 
     def draw_health_point(self):
         for hp_point in range(self.knight.hp_point):
@@ -168,6 +171,7 @@ class Level:
     
     def playing_update(self):
         self.group_knight.update()
+        self.group_monster.update()
         print(self.knight.pix_pos)
     
     def playing_draw(self):
@@ -178,6 +182,7 @@ class Level:
 
         self.draw_item()
         self.group_knight.draw(screen)
+        self.group_monster.draw(screen)
 
         screen.blit(self.tilemap_upper_wall, (INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME))
 

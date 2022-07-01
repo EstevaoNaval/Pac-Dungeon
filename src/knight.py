@@ -15,7 +15,7 @@ class Knight(pygame.sprite.Sprite):
         
         self.starting_pos = [pos.x,pos.y]
         self.grid_pos = pos
-        self.pix_pos = self.get_pix_pos()
+        self.pix_pos = grid_2_pix_pos(self.grid_pos)
 
         self.speed = 1
         self.direction = vec(1,0)
@@ -92,10 +92,7 @@ class Knight(pygame.sprite.Sprite):
     def move(self, direction):
         if direction == vec(-1, 0) or direction == vec(1, 0):
             self.last_right_or_left_direction = direction
-        self.stored_direction = direction 
-
-    def get_pix_pos(self):
-        return grid_2_pix_pos(self.grid_pos)
+        self.stored_direction = direction
 
     def time_to_move(self):
         if (self.pix_pos.x + CELL_WIDTH) % CELL_WIDTH == 0: 
@@ -124,18 +121,18 @@ class Knight(pygame.sprite.Sprite):
                 self.get_gem(i_gem)
                 break
         
-        for i_sword in range(len(self.level.rect_sword)):
-            if self.rect.colliderect(self.level.rect_sword[i_sword]):
-                self.get_sword(i_sword)
+        for i_pill in range(len(self.level.rect_pill)):
+            if self.rect.colliderect(self.level.rect_pill[i_pill]):
+                self.get_pill(i_pill)
                 break
+
+    def get_pill(self, index_pill):
+        del self.level.rect_pill[index_pill]
+        self.curr_score += 10
 
     def get_gem(self, index_gem):
         del self.level.rect_gem[index_gem]
-        self.curr_score += 10
-
-    def get_sword(self, index_sword):
-        del self.level.rect_sword[index_sword]
         self.curr_score += 100
 
-    '''def on_sword(self):
-        for i_sword in range(len())'''
+    '''def on_gem(self):
+        for i_gem in range(len())'''
