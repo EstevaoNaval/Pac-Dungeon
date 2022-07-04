@@ -12,7 +12,9 @@ from os import path
 vec = pygame.math.Vector2
 
 class Level:
-    def __init__(self, num_level, gender_knight):
+    def __init__(self, main, num_level, gender_knight):
+        self.main = main
+        
         self.clock = pygame.time.Clock()
 
         self.gender_knight = gender_knight
@@ -23,6 +25,7 @@ class Level:
         self.is_running = 1
         self.state = 'playing'
 
+        self.coord_path_monster_go_through_wall = []
         self.coord_wall = []
         self.coord_monster_house_gate = []
 
@@ -82,16 +85,16 @@ class Level:
         #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
 
     def load(self):
-        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_floor_level_"+self.num_level+".png")).convert_alpha()
+        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        "tilemap_floor_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_bottom_wall_level_"+self.num_level+".png")).convert_alpha()
+        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        "tilemap_bottom_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_"+self.num_level,
-        "tilemap_upper_wall_level_"+self.num_level+".png")).convert_alpha()
+        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        "tilemap_upper_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
         self.load_pass_blocker()
@@ -105,23 +108,25 @@ class Level:
         for x in range(len(self.matrix_tilemap)):
             for y in range(len(self.matrix_tilemap[0])):
                 code_tileset_map = int(self.matrix_tilemap[x][y])
-                if (code_tileset_map == -1):
-                    pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_pill.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                if (code_tileset_map == -1 or (code_tileset_map >= -6 and code_tileset_map <= -5) or code_tileset_map == -11):
+                    pix_pos = grid_2_pix_pos([y, x])
+                    self.rect_pill.append(Rect(pix_pos[0], pix_pos[1], CELL_WIDTH, CELL_HEIGHT))
                 if (code_tileset_map == -3):
-                    pix_pos = grid_2_pix_pos(vec(y, x))
-                    self.rect_gem.append(Rect(pix_pos.x, pix_pos.y, CELL_WIDTH, CELL_HEIGHT))
+                    pix_pos = grid_2_pix_pos([y, x])
+                    self.rect_gem.append(Rect(pix_pos[0], pix_pos[1], CELL_WIDTH, CELL_HEIGHT))
                 if ((code_tileset_map >= 11 and code_tileset_map < 70) or code_tileset_map >= 80):
-                    self.coord_wall.append(vec(y,x))
+                    self.coord_wall.append([y,x])
                 if (code_tileset_map == -10):
-                    self.coord_monster_house_gate.append(vec(y,x))
+                    self.coord_monster_house_gate.append([y,x])
+                if (code_tileset_map == -11):
+                    self.coord_path_monster_go_through_wall.append([y,x])
                 if (code_tileset_map == -5):
-                    self.knight_pos = vec(y, x)
+                    self.knight_pos = [y, x]
                 if (code_tileset_map >= -9 and code_tileset_map <= -6):
-                    self.monster_pos.append(vec(y,x))
+                    self.monster_pos.append([y,x])
 
     def load_gem(self):
-        self.gem = pygame.image.load(path.join(base_path["path_gem"], "gem_"+self.num_level+".png")).convert_alpha()
+        self.gem = pygame.image.load(path.join(base_path["path_gem"], "gem_{}.png".format(self.num_level))).convert_alpha()
         self.gem = pygame.transform.scale(self.gem, (16, 16))
 
     def choose_monster_type(self):
@@ -173,6 +178,7 @@ class Level:
         self.group_knight.update()
         self.group_monster.update()
         print(self.knight.pix_pos)
+        print("Monster: {}".format(self.monsters[0].pix_pos))
     
     def playing_draw(self):
         screen.fill(DARKGREY)

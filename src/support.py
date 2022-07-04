@@ -35,11 +35,11 @@ def import_and_cut_tileset_into_tiles(path, width, height, knight_pos):
     return sprites  # return the sprites
 
 def grid_2_pix_pos(coord_grid):
-    pix_pos_x = (coord_grid.x * CELL_WIDTH) + INITIAL_POSITION_X_GAME
-    pix_pos_y = (coord_grid.y * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME
-    return vec(pix_pos_x, pix_pos_y)
+    pix_pos_x = (coord_grid[0] * CELL_WIDTH) + INITIAL_POSITION_X_GAME
+    pix_pos_y = (coord_grid[1] * CELL_HEIGHT) + INITIAL_POSITION_Y_GAME
+    return [pix_pos_x, pix_pos_y]
 
 def pix_2_grid_pos(coord_pix):
-    grid_pos_x = floor((coord_pix.x - INITIAL_POSITION_X_GAME) / CELL_WIDTH)
-    grid_pos_y = floor((coord_pix.y - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
-    return vec(grid_pos_x, grid_pos_y)
+    grid_pos_x = floor((coord_pix[0] - INITIAL_POSITION_X_GAME) / CELL_WIDTH)
+    grid_pos_y = floor((coord_pix[1] - INITIAL_POSITION_Y_GAME) / CELL_HEIGHT)
+    return [grid_pos_x, grid_pos_y]

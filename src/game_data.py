@@ -7,7 +7,7 @@ base_path = {
 
 specs = {
     "step_1" : {
-        "knight_speed" : .8,
+        "knight_speed" : 0.8,
         "monster_speed" : 0.75,
         "monster_tunnel_speed" : 0.4,
         "elroy_1_dots_left" : 42,

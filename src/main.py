@@ -3,6 +3,14 @@ import pygame
 
 pygame.init()
 
-if __name__ == '__main__':
-    level = Level('1','M')
-    level.run()
+class Main:
+    def __init__(self):
+        self.step = 1
+    
+    def run(self):
+        for index in range(1,5):
+            level = Level(self, str(index), 'M')
+            level.run()
+
+main = Main()
+main.run()
