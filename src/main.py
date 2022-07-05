@@ -1,6 +1,7 @@
 from level import Level
 import pygame
 
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 pygame.init()
 
 class Main:

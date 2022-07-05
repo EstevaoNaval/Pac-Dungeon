@@ -26,7 +26,9 @@ PATH_FONT = "./assets/font/8-BIT WONDER.TTF"
 # Screen
 SCREEN_WIDTH, SCREEN_HEIGHT = 448, 640 # 16px X 28 tiles, 16px X 36 tiles + 16 X 4 tiles para placar
 MAZE_WIDTH, MAZE_HEIGHT = SCREEN_WIDTH, SCREEN_HEIGHT - 64
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+flags = DOUBLEBUF
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags, 16)
 
 CELL_WIDTH, CELL_HEIGHT = MAZE_WIDTH // NUM_TILE_MAZE_X, MAZE_HEIGHT // NUM_TILE_MAZE_Y
 

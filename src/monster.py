@@ -64,9 +64,9 @@ class Monster(pygame.sprite.Sprite):
 
     def set_speed(self):
         if self.action_mode in ["speedy","defeated"]:
-            speed = 0.8
+            speed = 0.75
         else:
-            speed = 0.8
+            speed = 0.75
         return speed
 
     def set_target(self):

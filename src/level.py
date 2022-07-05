@@ -47,10 +47,11 @@ class Level:
         self.group_monster = pygame.sprite.Group()
         self.make_monster()
 
-    def run(self):
-        self.clock.tick(FPS)
-
+    def run(self):    
         while self.is_playing:
+            self.clock.tick()
+            print("{}".format(self.clock.get_fps()))
+
             '''if self.state == 'start':
                 self.start_events()
                 self.start_update()
@@ -85,15 +86,15 @@ class Level:
         #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
 
     def load(self):
-        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}/".format(self.num_level), 
         "tilemap_floor_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}/".format(self.num_level), 
         "tilemap_bottom_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}".format(self.num_level), 
+        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}/".format(self.num_level), 
         "tilemap_upper_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
@@ -177,8 +178,26 @@ class Level:
     def playing_update(self):
         self.group_knight.update()
         self.group_monster.update()
-        print(self.knight.pix_pos)
+
+        '''for monster in self.monsters:
+            if self.knight.grid_pos == monster.grid_pos:
+                self.remove_life()'''
+
+        print("Knight: {}".format(self.knight.pix_pos))
         print("Monster: {}".format(self.monsters[0].pix_pos))
+
+    def remove_life(self):
+        self.knight.hp_point -= 1
+        if self.knight.hp_point == 0:
+            self.state = "game over"
+        else:
+            self.knight.grid_pos = self.knight.starting_pos
+            self.knight.pix_pos = grid_2_pix_pos(self.knight.grid_pos)
+            self.knight.direction *= 0
+            for monster in self.monsters:
+                monster.grid_pos = monster.starting_pos
+                monster.pix_pos = grid_2_pix_pos(monster.grid_pos)
+                monster.direction *= 0 
     
     def playing_draw(self):
         screen.fill(DARKGREY)

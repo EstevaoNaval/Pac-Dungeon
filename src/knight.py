@@ -118,22 +118,17 @@ class Knight(pygame.sprite.Sprite):
 
         return 1
 
-
     def on_item(self):
         for i_gem in range(len(self.level.rect_gem)):
             if self.rect.colliderect(self.level.rect_gem[i_gem]):
-                self.get_gem(i_gem)
+                self.get_item(i_gem, self.level.rect_gem, 50)
                 break
         
         for i_pill in range(len(self.level.rect_pill)):
             if self.rect.colliderect(self.level.rect_pill[i_pill]):
-                self.get_pill(i_pill)
+                self.get_item(i_pill, self.level.rect_pill, 10)
                 break
 
-    def get_pill(self, index_pill):
-        del self.level.rect_pill[index_pill]
-        self.curr_score += 10
-
-    def get_gem(self, index_gem):
-        del self.level.rect_gem[index_gem]
-        self.curr_score += 50
+    def get_item(self, index_item, list_rect_item, item_point):
+        del list_rect_item[index_item]
+        self.curr_score += item_point
