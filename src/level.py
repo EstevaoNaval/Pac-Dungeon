@@ -183,9 +183,6 @@ class Level:
             if self.knight.grid_pos == monster.grid_pos:
                 self.remove_life()'''
 
-        print("Knight: {}".format(self.knight.pix_pos))
-        print("Monster: {}".format(self.monsters[0].pix_pos))
-
     def remove_life(self):
         self.knight.hp_point -= 1
         if self.knight.hp_point == 0:
