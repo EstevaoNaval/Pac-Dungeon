@@ -29,6 +29,8 @@ class Level:
         self.coord_wall = []
         self.coord_monster_house_gate = []
 
+        self.coord_tunnel = []
+
         self.rect_pill = []
         self.rect_gem = []
         self.valuable_item = []
@@ -121,6 +123,8 @@ class Level:
                     self.coord_monster_house_gate.append([y,x])
                 if (code_tileset_map == -11):
                     self.coord_path_monster_go_through_wall.append([y,x])
+                if (code_tileset_map == -12):
+                    self.coord_tunnel.append([y,x])
                 if (code_tileset_map == -5):
                     self.knight_pos = [y, x]
                 if (code_tileset_map >= -9 and code_tileset_map <= -6):
@@ -179,6 +183,7 @@ class Level:
         self.group_knight.update()
         self.group_monster.update()
 
+        print("Speed: {}".format(self.monsters[0].speed))
         '''for monster in self.monsters:
             if self.knight.grid_pos == monster.grid_pos:
                 self.remove_life()'''

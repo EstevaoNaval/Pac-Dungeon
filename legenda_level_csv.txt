@@ -1,0 +1,10 @@
+-1 = Caminho livre e com moedas
+-2 = Apenas caminho livre
+-3 = Caminho com gemas
+-5 = Posição do knight. Há moedas
+-6 = Posição do monstro 01 (blinky). Há moedas.
+-7 a -9 = Posição do resto dos monstros na ordem (pinky, inky, clyde).
+-10 = Portão da casa dos monstros
+-11 = Caminho onde os monstros não podem passar, mas o knight pode
+-12 = Caminho do túnel
+

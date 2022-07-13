@@ -28,6 +28,7 @@ class Monster(pygame.sprite.Sprite):
         self.speed = self.set_speed()
         self.target = None
         self.last_right_or_left_direction = vec(1, 0)
+        self.stored_direction = None
         self.able_to_move = 1
         self.load_maze_grid()
 
@@ -39,7 +40,15 @@ class Monster(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, self.monster_width, self.monster_height)
 
     def update(self):
+        if self.direction == vec(-1, 0) or self.last_right_or_left_direction == vec(-1, 0):
+            self.image = self.monster_left_sprites[int(self.curr_sprite)]
+        elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
+            self.image = self.monster_right_sprites[int(self.curr_sprite)]
+
+        self.speed = self.set_speed()
+
         self.target = self.set_target()
+
         if self.target != self.grid_pos:
             
             self.pix_pos[0] += self.direction.x * self.speed
@@ -49,9 +58,11 @@ class Monster(pygame.sprite.Sprite):
             self.rect.y = self.pix_pos[1]
 
             if self.time_to_move():
+                if self.stored_direction != None:
+                    self.direction = self.stored_direction
                 self.move()
 
-        self.image = self.monster_right_sprites[int(self.curr_sprite)]
+        # self.image = self.monster_right_sprites[int(self.curr_sprite)]
 
         self.curr_sprite += 0.1
         if self.curr_sprite >= len(self.monster_left_sprites): self.curr_sprite = 0
@@ -63,11 +74,17 @@ class Monster(pygame.sprite.Sprite):
         pass
 
     def set_speed(self):
-        if self.action_mode in ["speedy","defeated"]:
-            speed = 0.75
-        else:
-            speed = 0.75
-        return speed
+        if self.grid_pos in self.level.coord_tunnel:
+            return specs["step_{}".format(self.level.main.step)]["monster_tunnel_speed"]
+        elif self.action_mode == "prey":
+            return specs["step_{}".format(self.level.main.step)]["fright_ghost_speed"]
+        elif self.action_mode == "elroy_2":
+            return  specs["step_{}".format(self.level.main.step)]["elroy_2_speed"]
+        elif self.action_mode == "elroy_1":
+            return  specs["step_{}".format(self.level.main.step)]["elroy_1_speed"]
+        elif self.action_mode in ["chaser", "scatter"]:
+            return specs["step_{}".format(self.level.main.step)]["monster_speed"]
+        
 
     def set_target(self):
         if self.monster_personality == "blinky":
@@ -101,6 +118,10 @@ class Monster(pygame.sprite.Sprite):
             self.direction = self.get_path_direction(self.target)
         if self.monster_personality == "clyde":
             self.direction = self.get_random_direction()
+        
+        if self.direction == vec(-1, 0) or self.direction == vec(1, 0):
+            self.last_right_or_left_direction = self.direction
+        self.stored_direction = self.direction
     
     def get_path_direction(self, target):
         next_cell = self.find_next_cell_in_path(target)

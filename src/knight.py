@@ -17,7 +17,7 @@ class Knight(pygame.sprite.Sprite):
         self.grid_pos = pos
         self.pix_pos = grid_2_pix_pos(self.grid_pos)
 
-        self.speed = .8
+        self.speed = specs["step_{}".format(self.level.main.step)]["knight_speed"]
         self.direction = vec(1,0)
         self.stored_direction = None
         self.last_right_or_left_direction = vec(1, 0)
