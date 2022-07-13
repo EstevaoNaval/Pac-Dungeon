@@ -1,6 +1,6 @@
 import os
 import pygame
-from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, SCREEN_HEIGHT, WHITE, screen
+from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, MAZE_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE, screen
 from game_data import *
 from support import grid_2_pix_pos, import_and_cut_tileset_into_tiles, pix_2_grid_pos
 
@@ -22,6 +22,7 @@ class Knight(pygame.sprite.Sprite):
         self.stored_direction = None
         self.last_right_or_left_direction = vec(1, 0)
         self.able_to_move = 1
+        self.action_mode = "prey"
 
         self.curr_score = 0
 
@@ -49,11 +50,13 @@ class Knight(pygame.sprite.Sprite):
         elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
             self.image = self.knight_right_sprites[int(self.curr_sprite)]
 
-        self.speed = specs["step_{}".format(self.level.main.step)]["knight_speed"]
+        self.speed = self.set_speed()
 
         if self.able_to_move:
             self.pix_pos[0] += self.direction.x * self.speed
             self.pix_pos[1] += self.direction.y * self.speed
+
+            self.in_tunnel()
 
             self.rect.x = self.pix_pos[0]
             self.rect.y = self.pix_pos[1]
@@ -70,6 +73,17 @@ class Knight(pygame.sprite.Sprite):
 
         # Set a posição do grid em referência a posição do pixel
         self.grid_pos = pix_2_grid_pos(self.pix_pos)
+    
+    def in_tunnel(self):
+        if self.pix_pos[0] > SCREEN_WIDTH:
+            self.pix_pos[0] = 0
+        elif self.pix_pos[0] < 0:
+            self.pix_pos[0] = SCREEN_WIDTH
+        elif self.pix_pos[1] < 32:
+            self.pix_pos[1] = SCREEN_HEIGHT - 31
+        elif self.pix_pos[1] > MAZE_HEIGHT + 32:
+            self.pix_pos[1] = 32
+
 
     def draw(self):
         '''self.knight_list = pygame.sprite.Group()
@@ -90,6 +104,12 @@ class Knight(pygame.sprite.Sprite):
         # Drawing the grid pos rect
         # pygame.draw.rect(self.app.screen, RED, (self.grid_pos[0]*self.app.cell_width+TOP_BOTTOM_BUFFER//2,
         #                                         self.grid_pos[1]*self.app.cell_height+TOP_BOTTOM_BUFFER//2, self.app.cell_width, self.app.cell_height), 1)
+
+    def set_speed(self):
+        if self.action_mode == "chaser":
+            return specs["step_{}".format(self.level.main.step)]["fright_knight_speed"]
+        elif self.action_mode == "prey":
+            return specs["step_{}".format(self.level.main.step)]["knight_speed"]
 
     def move(self, direction):
         if direction == vec(-1, 0) or direction == vec(1, 0):
