@@ -34,6 +34,7 @@ class Monster(pygame.sprite.Sprite):
 
         self.load_monster_sprite()
 
+        self.img_with_prey_sprite = 1
         self.curr_sprite = 0
         self.image = self.monster_right_sprites[self.curr_sprite]
 
@@ -41,13 +42,33 @@ class Monster(pygame.sprite.Sprite):
 
     def update(self):
         if self.direction == vec(-1, 0) or self.last_right_or_left_direction == vec(-1, 0):
-            self.image = self.monster_left_sprites[int(self.curr_sprite)]
+            if self.level.knight.action_mode == "chaser":
+                if self.level.knight.monster_mode_flash:
+                    if self.img_with_prey_sprite:
+                        self.image = self.monster_left_sprites[int(self.curr_sprite)]
+                    else:
+                        self.image = self.monster_prey_left_sprites[int(self.curr_sprite)]
+                else:
+                    self.image = self.monster_prey_left_sprites[int(self.curr_sprite)]
+            else:
+                self.image = self.monster_left_sprites[int(self.curr_sprite)]
         elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
-            self.image = self.monster_right_sprites[int(self.curr_sprite)]
+            if self.level.knight.action_mode == "chaser":
+                if self.level.knight.monster_mode_flash:
+                    if self.img_with_prey_sprite:
+                        self.image = self.monster_right_sprites[int(self.curr_sprite)]
+                    else:
+                        self.image = self.monster_prey_right_sprites[int(self.curr_sprite)]
+                else:
+                    self.image = self.monster_prey_right_sprites[int(self.curr_sprite)]
+            else:
+                self.image = self.monster_right_sprites[int(self.curr_sprite)]
 
         self.speed = self.set_speed()
 
         self.target = self.set_target()
+
+        self.action_mode = self.set_action_mode()
 
         if self.target != self.grid_pos:
             
@@ -68,6 +89,9 @@ class Monster(pygame.sprite.Sprite):
         if self.curr_sprite >= len(self.monster_left_sprites): self.curr_sprite = 0
 
         self.grid_pos = pix_2_grid_pos(self.pix_pos)
+    
+    def remaining_pill(self):
+        return len(self.level.rect_pill)
     
     def draw(self):
         self.image.blit(screen, self.pix_pos)
@@ -198,6 +222,9 @@ class Monster(pygame.sprite.Sprite):
         # Create start and end node with initized values for g, h and f
         start_node = self.Node(None, tuple(start))
         start_node.g = start_node.h = start_node.f = 0
+
+        if end[0] >= 28: end[0] = 27
+        if end[1] >= 36: end[1] = 35
 
         if self.maze[end[1]][end[0]] == 2:
             if self.maze[end[1] + 1][end[0]] not in [1,2]:
@@ -341,6 +368,9 @@ class Monster(pygame.sprite.Sprite):
 
             path_monster_left = path.join(base_path["path_monster"], "zombie/", "zombie_{}_run_left.png".format(self.monster_number))
             path_monster_right = path.join(base_path["path_monster"], "zombie/", "zombie_{}_run_right.png".format(self.monster_number))
+
+            path_monster_prey_left = path.join(base_path["path_monster"], "zombie/", "prey/", "zombie_prey_run_left.png")
+            path_monster_prey_right = path.join(base_path["path_monster"], "zombie/" "prey/", "zombie_prey_run_right.png")
         elif self.monster_type == "ogre":
             self.monster_width, self.monster_height = 32, 32
             
@@ -360,6 +390,9 @@ class Monster(pygame.sprite.Sprite):
 
         self.monster_left_sprites = import_and_cut_tileset_into_tiles(path_monster_left, self.monster_width, self.monster_height, self.starting_pos)
         self.monster_right_sprites = import_and_cut_tileset_into_tiles(path_monster_right, self.monster_width, self.monster_height, self.starting_pos)
+
+        self.monster_prey_left_sprites = import_and_cut_tileset_into_tiles(path_monster_prey_left, self.monster_width, self.monster_height, self.starting_pos)
+        self.monster_prey_right_sprites = import_and_cut_tileset_into_tiles(path_monster_prey_right, self.monster_width, self.monster_height, self.starting_pos)
 
     def load_maze_grid(self):
         self.maze = [[0 for x in range(NUM_TILE_MAZE_X)] for x in range(NUM_TILE_MAZE_Y)]
@@ -382,15 +415,19 @@ class Monster(pygame.sprite.Sprite):
             return "clyde"
     
     def set_action_mode(self):
-        if self.action_number == 0:
+        if self.monster_personality == "blinky":
+            if self.remaining_pill() <= specs["step_{}".format(self.level.main.step)]["elroy_2_dots_left"]:
+                return "elroy_2"
+            elif self.remaining_pill() <= specs["step_{}".format(self.level.main.step)]["elroy_1_dots_left"]:
+                return "elroy_1"
+        
+        return "chaser"
+
+        '''elif self.action_number == 0:
             return "chaser"
         elif self.action_number == 1:
             return "prey"
         elif self.action_number == 2:
             return "defeated"
-        elif self.action_number == 3:
-            return "elroy_1"
-        elif self.action_number == 4:
-            return "elroy_2"
         else:
-            return "scatter"
+            return "scatter"'''

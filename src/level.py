@@ -16,6 +16,8 @@ class Level:
         self.main = main
         
         self.clock = pygame.time.Clock()
+        self.curr_time = 0
+        self.last_time = 0
 
         self.gender_knight = gender_knight
 
@@ -48,6 +50,13 @@ class Level:
         self.monster_type = self.choose_monster_type()
         self.group_monster = pygame.sprite.Group()
         self.make_monster()
+
+    def delta_time(self):
+        '''
+        Returns the time passed between
+        the last and the current frame - SECONDS
+        '''
+        return (self.curr_time - self.last_time)/1000.0
 
     def run(self):    
         while self.is_playing:
@@ -180,6 +189,9 @@ class Level:
                     self.knight.move(vec(0, 1))
     
     def playing_update(self):
+        self.last_time = self.curr_time
+        self.curr_time = pygame.time.get_ticks()
+
         self.group_knight.update()
         self.group_monster.update()
 

@@ -22,6 +22,9 @@ class Knight(pygame.sprite.Sprite):
         self.stored_direction = None
         self.last_right_or_left_direction = vec(1, 0)
         self.able_to_move = 1
+
+        self.time_prey = 0
+        self.num_flash = specs["step_{}".format(self.level.main.step)]["number_of_flashes"]
         self.action_mode = "prey"
 
         self.curr_score = 0
@@ -30,6 +33,7 @@ class Knight(pygame.sprite.Sprite):
 
         self.load_knight_sprite()
 
+        self.monster_mode_flash = 1
         self.curr_sprite = 0
         self.image = self.knight_right_sprites[self.curr_sprite]
 
@@ -49,6 +53,9 @@ class Knight(pygame.sprite.Sprite):
             self.image = self.knight_left_sprites[int(self.curr_sprite)]
         elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
             self.image = self.knight_right_sprites[int(self.curr_sprite)]
+
+        if self.action_mode == "chaser":
+            self.event_knight_chaser()
 
         self.speed = self.set_speed()
 
@@ -83,6 +90,22 @@ class Knight(pygame.sprite.Sprite):
             self.pix_pos[1] = SCREEN_HEIGHT - 31
         elif self.pix_pos[1] > MAZE_HEIGHT + 32:
             self.pix_pos[1] = 32
+
+    def activate_mode_chaser(self):
+        self.action_mode = "chaser"
+
+    def event_knight_chaser(self):
+        self.time_prey += self.level.delta_time()
+        if self.time_prey >= specs["step_{}".format(self.level.main.step)]["fright_time_in_sec"]:
+            if self.num_flash <= 0:
+                self.monster_mode_flash = 0
+                self.time_prey = 0
+                self.num_flash = specs["step_{}".format(self.level.main.step)]["knight_speed"]
+                self.action_mode = "prey"
+            else:
+                self.monster_mode_flash = 1
+            self.num_flash -= 1
+
 
 
     def draw(self):
@@ -141,6 +164,7 @@ class Knight(pygame.sprite.Sprite):
     def on_item(self):
         for i_gem in range(len(self.level.rect_gem)):
             if self.rect.colliderect(self.level.rect_gem[i_gem]):
+                self.activate_mode_chaser()
                 self.get_item(i_gem, self.level.rect_gem, 50)
                 break
         
@@ -152,3 +176,6 @@ class Knight(pygame.sprite.Sprite):
     def get_item(self, index_item, list_rect_item, item_point):
         del list_rect_item[index_item]
         self.curr_score += item_point
+
+    def set_action_mode(self):
+        pass
