@@ -1,4 +1,5 @@
 import os
+from time import time
 import pygame
 from settings import CELL_HEIGHT, CELL_WIDTH, INITIAL_POSITION_X_GAME, INITIAL_POSITION_Y_GAME, MAZE_HEIGHT, SCREEN_HEIGHT, SCREEN_WIDTH, WHITE, screen
 from game_data import *
@@ -93,10 +94,13 @@ class Knight(pygame.sprite.Sprite):
 
     def activate_mode_chaser(self):
         self.action_mode = "chaser"
+        self.time = time()
 
     def event_knight_chaser(self):
-        self.time_prey += self.level.delta_time()
-        if self.time_prey >= specs["step_{}".format(self.level.main.step)]["fright_time_in_sec"]:
+        # self.time_prey += self.level.delta_time()
+        if self.time >= specs["step_{}".format(self.level.main.step)]["fright_time_in_sec"]:
+            self.time = time.time()
+            self.time = 0
             if self.num_flash <= 0:
                 self.monster_mode_flash = 0
                 self.time_prey = 0
@@ -104,8 +108,7 @@ class Knight(pygame.sprite.Sprite):
                 self.action_mode = "prey"
             else:
                 self.monster_mode_flash = 1
-            self.num_flash -= 1
-
+                self.num_flash -= 1
 
 
     def draw(self):

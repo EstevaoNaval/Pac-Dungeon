@@ -56,11 +56,11 @@ class Level:
         Returns the time passed between
         the last and the current frame - SECONDS
         '''
-        return (self.curr_time - self.last_time)/1000.0
+        return self.clock.get_time()/1000
 
     def run(self):    
         while self.is_playing:
-            self.clock.tick()
+            self.clock.tick(FPS)
             print("{}".format(self.clock.get_fps()))
 
             '''if self.state == 'start':
