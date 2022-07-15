@@ -1,4 +1,5 @@
 from math import dist
+from operator import ne
 from os import path
 from random import randint
 import pygame
@@ -117,7 +118,7 @@ class Monster(pygame.sprite.Sprite):
             '''if dist(self.grid_pos, self.level.knight.grid_pos) <= 4:
                 return self.level.knight.grid_pos
             else:
-                return [self.level.knight.grid_pos[0] + 4 * self.level.knight.direction.x, self.level.knight.grid_pos[0] + 4 * self.level.knight.direction.y]'''
+                return [self.level.knight.grid_pos[0] + 4 * int(self.level.knight.direction.y), self.level.knight.grid_pos[1] + 4 * int(self.level.knight.direction.x)]'''
             return self.level.knight.grid_pos
         elif self.monster_personality == "inky":
             '''knight_offset = [self.level.knight.grid_pos[0] + 2 * self.level.knight.direction.x, self.level.knight.grid_pos[1] + 2 * self.level.knight.direction.y]
@@ -129,6 +130,30 @@ class Monster(pygame.sprite.Sprite):
             else:
                 pass'''
             return self.level.knight.grid_pos
+    
+    def get_nearest_walkable_tile(self, target):
+        min = float(1000)
+        min_index_column = 0
+        min_index_row = 0
+
+        for index_row in range(0, NUM_TILE_MAZE_X):
+            for index_column in range(0, NUM_TILE_MAZE_Y):
+                if [index_column, index_row] not in self.level.coord_wall and [index_column, index_row] not in self.level.coord_path_monster_go_through_wall:
+                    if dist([index_column, index_row], [target[0], target[1]]) < min:
+                        min = dist([index_column, index_row], [target[0], target[1]])
+                        min_index_column = index_column
+                        min_index_row = index_row
+        
+        return [min_index_column, min_index_row]
+
+        '''for neightbor_raius in range(1, 5):
+            for index_row in range(max(0, target[1] - neightbor_raius), min(target[1] + neightbor_raius+1, NUM_TILE_MAZE_X)):
+                for index_column in range(max(0, target[0] - neightbor_raius), min(target[0] + neightbor_raius+1, NUM_TILE_MAZE_Y)):
+                    if (abs(target[1] - index_row) >= neightbor_raius or abs(target[0] - index_column) >= neightbor_raius):
+                        if [index_column, index_row] not in self.level.coord_wall and [index_column, index_row] not in self.level.coord_path_monster_go_through_wall:
+                            return [index_column, index_row]
+        pass'''
+
 
     def time_to_move(self):
         if int(self.pix_pos[0]) % CELL_WIDTH == 0: 
@@ -138,10 +163,10 @@ class Monster(pygame.sprite.Sprite):
         return 0
 
     def move(self):
-        if self.monster_personality in ["blinky","pinky","inky"]:
+        if self.monster_personality in ["blinky","pinky","inky","clyde"]:
             self.direction = self.get_path_direction(self.target)
-        if self.monster_personality == "clyde":
-            self.direction = self.get_random_direction()
+        '''if self.monster_personality == "clyde":
+            self.direction = self.get_random_direction()'''
         
         if self.direction == vec(-1, 0) or self.direction == vec(1, 0):
             self.last_right_or_left_direction = self.direction
@@ -154,6 +179,15 @@ class Monster(pygame.sprite.Sprite):
         return vec(xdir, ydir)
     
     def find_next_cell_in_path(self, target):
+        if target[0] >= 28: target[0] = 27
+        elif target[0] < 0: target[0] = 0
+
+        if target[1] >= 36: target[1] = 35
+        elif target[1] < 0: target[1] = 0
+
+        if target in self.level.coord_wall or target in self.level.coord_path_monster_go_through_wall:
+            target = self.get_nearest_walkable_tile(target)
+
         path = self.a_star(self.grid_pos, target)
         if len(path) > 1:
             return list(path[1])
@@ -223,10 +257,13 @@ class Monster(pygame.sprite.Sprite):
         start_node = self.Node(None, tuple(start))
         start_node.g = start_node.h = start_node.f = 0
 
-        if end[0] >= 28: end[0] = 27
-        if end[1] >= 36: end[1] = 35
+        '''if end[0] >= 28: end[0] = 27
+        elif end[0] < 0: end[0] = 0
 
-        if self.maze[end[1]][end[0]] == 2:
+        if end[1] >= 36: end[1] = 35
+        elif end[1] < 0: end[1] = 0'''
+
+        '''if self.maze[end[1]][end[0]] == 2:
             if self.maze[end[1] + 1][end[0]] not in [1,2]:
                 end = [end[0], end[1] + 1]
             elif self.maze[end[1]][end[0] - 1] not in [1,2]:
@@ -234,7 +271,7 @@ class Monster(pygame.sprite.Sprite):
             elif self.maze[end[1] - 1][end[0]] not in [1,2]:
                 end = [end[0], end[1] - 1]
             elif self.maze[end[1]][end[0] + 1] not in [1,2]:
-                end = [end[0]+1, end[1]]
+                end = [end[0]+1, end[1]]'''
 
         end_node = self.Node(None, tuple(end))
         end_node.g = end_node.h = end_node.f = 0

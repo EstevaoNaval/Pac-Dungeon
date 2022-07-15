@@ -25,7 +25,7 @@ class Level:
 
         self.is_playing = 1
         self.is_running = 1
-        self.state = 'playing'
+        self.state = 'start'
 
         self.coord_path_monster_go_through_wall = []
         self.coord_wall = []
@@ -63,11 +63,11 @@ class Level:
             self.clock.tick(FPS)
             print("{}".format(self.clock.get_fps()))
 
-            '''if self.state == 'start':
+            if self.state == 'start':
                 self.start_events()
                 self.start_update()
-                self.start_draw()'''
-            if self.state == 'playing':
+                self.start_draw()
+            elif self.state == 'playing':
                 self.playing_events()
                 self.playing_update()
                 self.playing_draw()
@@ -169,13 +169,27 @@ class Level:
             screen.blit(self.knight.knight_right_sprites[0], (INITIAL_POSITION_X_GAME + hp_point * CELL_WIDTH + 4 * CELL_WIDTH, INITIAL_POSITION_Y_GAME + MAZE_HEIGHT))
 
     def start_draw(self):
-        # TODO
+        screen.fill(BLACK)
+        self.draw_text('PUSH SPACE BAR', screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//2-50], SIZE_FONT, (170, 132, 58), PATH_FONT, centered=True)
+        self.draw_text('1 PLAYER ONLY', screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//2+50], SIZE_FONT, (44, 167, 198), PATH_FONT, centered=True)
+        self.draw_text('HIGH SCORE', screen, [4, 0], SIZE_FONT, (255, 255, 255), PATH_FONT)
+        pygame.display.update()
         pass
+
+    def start_update(self):
+        pass
+
+    def start_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.is_playing = 0
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.state = 'playing'
 
     def playing_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.is_running = 0
+                self.is_playing = 0
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
@@ -196,14 +210,15 @@ class Level:
         self.group_monster.update()
 
         print("Speed: {}".format(self.monsters[0].speed))
-        '''for monster in self.monsters:
-            if self.knight.grid_pos == monster.grid_pos:
-                self.remove_life()'''
+
+        for monster in self.monsters:
+            if self.knight.rect.colliderect(monster.rect):
+                self.remove_life()
 
     def remove_life(self):
         self.knight.hp_point -= 1
         if self.knight.hp_point == 0:
-            self.state = "game over"
+            self.state = "game_over"
         else:
             self.knight.grid_pos = self.knight.starting_pos
             self.knight.pix_pos = grid_2_pix_pos(self.knight.grid_pos)
@@ -235,4 +250,24 @@ class Level:
 
         pygame.display.flip()
 
+    def game_over_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.is_playing = 0
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                self.reset()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.is_playing = 0
+
+    def game_over_update(self):
+        pass
+
+    def game_over_draw(self):
+        screen.fill(BLACK)
+        quit_text = "Press the escape button to QUIT"
+        again_text = "Press SPACE bar to PLAY AGAIN"
+        self.draw_text("GAME OVER", screen, [SCREEN_WIDTH//2, 100],  52, RED, PATH_FONT, centered=True)
+        self.draw_text(again_text, screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//2],  36, (190, 190, 190), PATH_FONT, centered=True)
+        self.draw_text(quit_text, screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//1.5],  36, (190, 190, 190), PATH_FONT, centered=True)
+        pygame.display.update()
         

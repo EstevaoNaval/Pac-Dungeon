@@ -55,8 +55,8 @@ class Knight(pygame.sprite.Sprite):
         elif self.direction == vec(1, 0) or self.last_right_or_left_direction == vec(1, 0):
             self.image = self.knight_right_sprites[int(self.curr_sprite)]
 
-        if self.action_mode == "chaser":
-            self.event_knight_chaser()
+        '''if self.action_mode == "chaser":
+            self.event_knight_chaser()'''
 
         self.speed = self.set_speed()
 
@@ -96,7 +96,7 @@ class Knight(pygame.sprite.Sprite):
         self.action_mode = "chaser"
         self.time = time()
 
-    def event_knight_chaser(self):
+    '''def event_knight_chaser(self):
         # self.time_prey += self.level.delta_time()
         if self.time >= specs["step_{}".format(self.level.main.step)]["fright_time_in_sec"]:
             self.time = time.time()
@@ -108,7 +108,7 @@ class Knight(pygame.sprite.Sprite):
                 self.action_mode = "prey"
             else:
                 self.monster_mode_flash = 1
-                self.num_flash -= 1
+                self.num_flash -= 1'''
 
 
     def draw(self):
@@ -167,7 +167,7 @@ class Knight(pygame.sprite.Sprite):
     def on_item(self):
         for i_gem in range(len(self.level.rect_gem)):
             if self.rect.colliderect(self.level.rect_gem[i_gem]):
-                self.activate_mode_chaser()
+                # self.activate_mode_chaser()
                 self.get_item(i_gem, self.level.rect_gem, 50)
                 break
         

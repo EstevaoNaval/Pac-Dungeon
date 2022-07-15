@@ -5,6 +5,7 @@ from pygame.locals import *
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 DARKGREY = (40,40,40)
+RED = (208, 22, 22)
 GRAYISH_YELLOW = (190,187,160)
 BG_COLOR = DARKGREY
 
