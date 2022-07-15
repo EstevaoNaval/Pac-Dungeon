@@ -9,9 +9,9 @@ class Main:
         self.step = 1
     
     def run(self):
-        for index in range(1,5):
-            level = Level(self, str(index), 'M')
-            level.run()
+        #for index in range(1,5):
+        level = Level(self, '1', 'M')
+        level.run()
 
 main = Main()
 main.run()

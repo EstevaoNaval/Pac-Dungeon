@@ -27,7 +27,7 @@ class Knight(pygame.sprite.Sprite):
         self.time_prey = 0
         self.num_flash = specs["step_{}".format(self.level.main.step)]["number_of_flashes"]
         self.action_mode = "prey"
-
+        
         self.curr_score = 0
 
         self.hp_point = 2
@@ -96,7 +96,7 @@ class Knight(pygame.sprite.Sprite):
         self.action_mode = "chaser"
         self.time = time()
 
-    '''def event_knight_chaser(self):
+    def event_knight_chaser(self):
         # self.time_prey += self.level.delta_time()
         if self.time >= specs["step_{}".format(self.level.main.step)]["fright_time_in_sec"]:
             self.time = time.time()
@@ -108,7 +108,7 @@ class Knight(pygame.sprite.Sprite):
                 self.action_mode = "prey"
             else:
                 self.monster_mode_flash = 1
-                self.num_flash -= 1'''
+                self.num_flash -= 1
 
 
     def draw(self):

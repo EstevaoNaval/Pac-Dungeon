@@ -14,6 +14,8 @@ vec = pygame.math.Vector2
 class Level:
     def __init__(self, main, num_level, gender_knight):
         self.main = main
+
+        self.sound_obj = pygame.mixer.Sound("./src/assets/sound/bg_sound.mp3")
         
         self.clock = pygame.time.Clock()
         self.curr_time = 0
@@ -75,6 +77,10 @@ class Level:
                 self.game_over_events()
                 self.game_over_update()
                 self.game_over_draw()
+            elif self.state == 'win':
+                self.win_events()
+                self.win_update()
+                self.win_draw()
             else:
                 self.is_playing = 0
     
@@ -97,6 +103,9 @@ class Level:
         #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
 
     def load(self):
+        self.sound_obj.play()
+        self.import_hi_score()
+
         self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}/".format(self.num_level), 
         "tilemap_floor_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
@@ -212,12 +221,18 @@ class Level:
         print("Speed: {}".format(self.monsters[0].speed))
 
         for monster in self.monsters:
+            '''if self.knight.grid_pos == monster.grid_pos:
+                self.remove_life()'''
             if self.knight.rect.colliderect(monster.rect):
                 self.remove_life()
 
     def remove_life(self):
         self.knight.hp_point -= 1
         if self.knight.hp_point == 0:
+            if self.knight.curr_score > int(self.hi_score):
+                self.write_hi_score()
+
+            self.sound_obj.stop()
             self.state = "game_over"
         else:
             self.knight.grid_pos = self.knight.starting_pos
@@ -243,12 +258,47 @@ class Level:
         # self.draw_grid()
 
         self.draw_text('GAME SCORE: {}'.format(self.knight.curr_score), screen, [SCREEN_WIDTH//60+2, 0], SIZE_FONT, WHITE, PATH_FONT)
-        self.draw_text('HI-SCORE: 0', screen, [SCREEN_WIDTH//2+60, 0], SIZE_FONT, WHITE, PATH_FONT)
+        self.draw_text('HI-SCORE: {}'.format(self.hi_score), screen, [SCREEN_WIDTH//2+30, 0], SIZE_FONT, WHITE, PATH_FONT)
 
         self.draw_text('LIFE: ', screen, [SCREEN_WIDTH//60 + 2, INITIAL_POSITION_Y_GAME + MAZE_HEIGHT + CELL_HEIGHT//2], SIZE_FONT, WHITE, PATH_FONT)
         self.draw_health_point()
 
         pygame.display.flip()
+
+    def win_update(self):
+        pass
+
+    def win_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.K_SPACE:
+                self.is_playing = 0
+
+    def win_draw(self):
+        screen.fill(BLACK)
+        win_text = "Congratulations!!! You win phase the {}".format(self.level.main.step)
+        quit_text = "Press space to QUIT"
+        self.draw_text(win_text, screen, [SCREEN_WIDTH//2, 100],  52, RED, PATH_FONT, centered=True)
+        # self.draw_text(again_text, screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//2],  36, (190, 190, 190), PATH_FONT, centered=True)
+        self.draw_text(quit_text, screen, [SCREEN_WIDTH//2, SCREEN_HEIGHT//1.5],  36, (190, 190, 190), PATH_FONT, centered=True)
+        pygame.display.update()
+  
+    def win(self):
+        if len(self.rect_pill) == 0:
+            self.state = "win"
+    
+    def reset(self):
+        self.knight.hp_point = 2
+        self.knight.curr_score = 0
+        self.knight.grid_pos = self.knight_pos
+        self.knight.pix_pos = grid_2_pix_pos(self.knight.grid_pos)
+        self.knight.direction *= 0
+        for index_monster in range(len(self.monsters)):  
+            self.monsters[index_monster].grid_pos = self.monsters[index_monster].starting_pos
+            self.monsters[index_monster].pix_pos = grid_2_pix_pos(self.monsters[index_monster].grid_pos)
+            self.monsters[index_monster].direction *= 0
+
+        self.load()
+        self.state = "playing"
 
     def game_over_events(self):
         for event in pygame.event.get():
@@ -261,6 +311,14 @@ class Level:
 
     def game_over_update(self):
         pass
+
+    def import_hi_score(self):
+        with open("./score.txt", mode="r+") as file:
+            self.hi_score = file.readline()
+
+    def write_hi_score(self):
+        with open("./score.txt", mode="w+") as file:
+            file.write(str(self.knight.curr_score))
 
     def game_over_draw(self):
         screen.fill(BLACK)
