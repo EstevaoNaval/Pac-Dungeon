@@ -15,7 +15,7 @@ class Level:
     def __init__(self, main, num_level, gender_knight):
         self.main = main
 
-        self.sound_obj = pygame.mixer.Sound(".\\src\\assets\\sound\\bg_sound.mp3")
+        self.sound_obj = pygame.mixer.Sound(".//src//assets//sound//bg_sound.mp3")
         
         self.clock = pygame.time.Clock()
         self.curr_time = 0
@@ -106,15 +106,15 @@ class Level:
         self.sound_obj.play()
         self.import_hi_score()
 
-        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}\\".format(self.num_level), 
+        self.tilemap_floor = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}//".format(self.num_level), 
         "tilemap_floor_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_floor = pygame.transform.scale(self.tilemap_floor, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}\\".format(self.num_level), 
+        self.tilemap_bottom_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}//".format(self.num_level), 
         "tilemap_bottom_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_bottom_wall = pygame.transform.scale(self.tilemap_bottom_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
-        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}\\".format(self.num_level), 
+        self.tilemap_upper_wall = pygame.image.load(path.join(base_path["path_tilemap"], "level_{}//".format(self.num_level), 
         "tilemap_upper_wall_level_{}.png".format(self.num_level))).convert_alpha()
         self.tilemap_upper_wall = pygame.transform.scale(self.tilemap_upper_wall, (MAZE_WIDTH, MAZE_HEIGHT))
 
@@ -313,11 +313,11 @@ class Level:
         pass
 
     def import_hi_score(self):
-        with open(".\\score.txt", mode="r+") as file:
+        with open(".//score.txt", mode="r+") as file:
             self.hi_score = file.readline()
 
     def write_hi_score(self):
-        with open(".\\score.txt", mode="w+") as file:
+        with open(".//score.txt", mode="w+") as file:
             file.write(str(self.knight.curr_score))
 
     def game_over_draw(self):
