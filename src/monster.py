@@ -403,26 +403,26 @@ class Monster(pygame.sprite.Sprite):
         if self.monster_type == "zombie":
             self.monster_width, self.monster_height = 32, 34
 
-            path_monster_left = path.join(base_path["path_monster"], "zombie/", "zombie_{}_run_left.png".format(self.monster_number))
-            path_monster_right = path.join(base_path["path_monster"], "zombie/", "zombie_{}_run_right.png".format(self.monster_number))
+            path_monster_left = path.join(base_path["path_monster"], "zombie\\", "zombie_{}_run_left.png".format(self.monster_number))
+            path_monster_right = path.join(base_path["path_monster"], "zombie\\", "zombie_{}_run_right.png".format(self.monster_number))
 
-            path_monster_prey_left = path.join(base_path["path_monster"], "zombie/", "prey/", "zombie_prey_run_left.png")
-            path_monster_prey_right = path.join(base_path["path_monster"], "zombie/" "prey/", "zombie_prey_run_right.png")
+            path_monster_prey_left = path.join(base_path["path_monster"], "zombie\\", "prey\\", "zombie_prey_run_left.png")
+            path_monster_prey_right = path.join(base_path["path_monster"], "zombie\\" "prey\\", "zombie_prey_run_right.png")
         elif self.monster_type == "ogre":
             self.monster_width, self.monster_height = 32, 32
             
-            path_monster_left = path.join(base_path["path_monster"], "ogre/","ogre_{}_run_left.png".format(self.monster_number))
-            path_monster_right = path.join(base_path["path_monster"], "ogre/","ogre_{}_run_right.png".format(self.monster_number))
+            path_monster_left = path.join(base_path["path_monster"], "ogre\\","ogre_{}_run_left.png".format(self.monster_number))
+            path_monster_right = path.join(base_path["path_monster"], "ogre\\","ogre_{}_run_right.png".format(self.monster_number))
         elif self.monster_type == "dark_knight":
             self.monster_width, self.monster_height = 32, 32
             
-            path_monster_left = path.join(base_path["path_monster"], "dark_knight/", "dark_knight_{}_run_left.png".format(self.monster_number))
-            path_monster_right = path.join(base_path["path_monster"], "dark_knight/", "dark_knight_{}_run_right.png".format(self.monster_number))
+            path_monster_left = path.join(base_path["path_monster"], "dark_knight\\", "dark_knight_{}_run_left.png".format(self.monster_number))
+            path_monster_right = path.join(base_path["path_monster"], "dark_knight\\", "dark_knight_{}_run_right.png".format(self.monster_number))
         else:
             self.monster_width, self.monster_height = 32, 36
 
-            path_monster_left = path.join(base_path["path_monster"], "hades/", "hades_{}_run_left.png".format(self.monster_number))
-            path_monster_right = path.join(base_path["path_monster"], "hades/", "hades_{}_run_right.png".format(self.monster_number))
+            path_monster_left = path.join(base_path["path_monster"], "hades\\", "hades_{}_run_left.png".format(self.monster_number))
+            path_monster_right = path.join(base_path["path_monster"], "hades\\", "hades_{}_run_right.png".format(self.monster_number))
             pass
 
         self.monster_left_sprites = import_and_cut_tileset_into_tiles(path_monster_left, self.monster_width, self.monster_height, self.starting_pos)

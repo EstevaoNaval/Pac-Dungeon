@@ -22,7 +22,7 @@ GAME_STATE = "menu"
 
 # Text
 SIZE_FONT = 32
-PATH_FONT = "./assets/font/8-BIT WONDER.TTF" 
+PATH_FONT = ".\\assets\\font\\8-BIT WONDER.TTF" 
 
 # Screen
 SCREEN_WIDTH, SCREEN_HEIGHT = 448, 640 # 16px X 28 tiles, 16px X 36 tiles + 16 X 4 tiles para placar

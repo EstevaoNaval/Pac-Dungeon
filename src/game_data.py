@@ -1,8 +1,8 @@
 base_path = {
-    "path_knight" : "./src/assets/knight/",
-    "path_tilemap" : "./src/assets/map/",
-    "path_monster" : "./src/assets/monster/",
-    "path_gem" : "./src/assets/item/gem/"
+    "path_knight" : ".\\src\\assets\\knight\\",
+    "path_tilemap" : ".\\src\\assets\\map\\",
+    "path_monster" : ".\\src\\assets\\monster\\",
+    "path_gem" : ".\\src\\assets\\item\\gem\\"
 }
 
 specs = {

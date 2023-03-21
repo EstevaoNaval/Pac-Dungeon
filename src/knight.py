@@ -43,8 +43,8 @@ class Knight(pygame.sprite.Sprite):
     def load_knight_sprite(self):
         self.knight_width, self.knight_height = 16, 28
         
-        path_knight_right = os.path.join(base_path["path_knight"],"{}/".format(self.knight_gender), "knight_{}_run_right.png".format(self.knight_gender))
-        path_knight_left = os.path.join(base_path["path_knight"],"{}/".format(self.knight_gender),"knight_{}_run_left.png".format(self.knight_gender))
+        path_knight_right = os.path.join(base_path["path_knight"],"{}\\".format(self.knight_gender), "knight_{}_run_right.png".format(self.knight_gender))
+        path_knight_left = os.path.join(base_path["path_knight"],"{}\\".format(self.knight_gender),"knight_{}_run_left.png".format(self.knight_gender))
 
         self.knight_left_sprites = import_and_cut_tileset_into_tiles(path_knight_left, self.knight_width, self.knight_height, self.starting_pos)
         self.knight_right_sprites = import_and_cut_tileset_into_tiles(path_knight_right, self.knight_width, self.knight_height, self.starting_pos)
@@ -128,8 +128,8 @@ class Knight(pygame.sprite.Sprite):
             pygame.draw.circle(screen, WHITE, (30 + 20*x, SCREEN_HEIGHT - 15), 7)'''
 
         # Drawing the grid pos rect
-        # pygame.draw.rect(self.app.screen, RED, (self.grid_pos[0]*self.app.cell_width+TOP_BOTTOM_BUFFER//2,
-        #                                         self.grid_pos[1]*self.app.cell_height+TOP_BOTTOM_BUFFER//2, self.app.cell_width, self.app.cell_height), 1)
+        # pygame.draw.rect(self.app.screen, RED, (self.grid_pos[0]*self.app.cell_width+TOP_BOTTOM_BUFFER\\2,
+        #                                         self.grid_pos[1]*self.app.cell_height+TOP_BOTTOM_BUFFER\\2, self.app.cell_width, self.app.cell_height), 1)
 
     def set_speed(self):
         if self.action_mode == "chaser":
